@@ -6,8 +6,8 @@
 
 ## Incorrect SMA Energy data
 
-At least one time, the data in Home Assistant for SMA Inverter and Home Manager 2.0 has been wrong.
-In this case, there was a peak at 25/1-2022 where consumed solar was over 2700 kWh early in the morning.
+At least one time, the data in Home Assistant for SMA Inverter and Home Manager 2.0 has been wrong.\
+In this case, there was a peak at 25/1-2022 where produced (consumed) solar was over 2700 kWh early in the morning.
 
 #### This is how I identified and corrected the problem.
 
@@ -15,7 +15,8 @@ For Recorder database (MariaDB) i am using MySQL Workbench:
 
 1. Identify the different meta-id that you need to look at through `select * from homeassistant.statistics_meta`.
    - You may need to identify several that applies to the error.
-2. For the identified meta-ids, run sql command to look at the data, for instance `select * from homeassistant.statistics where metadata_id = 4`.
+2. For the identified meta-ids, run sql command to look at the data:
+   - With for instance `select * from homeassistant.statistics where metadata_id = 4`.
    - In this case it was meta-id 4 `sensor.total_yield` that contained the error where column `state` was 0 for a number of hours.
 3. I updated the column `state` to the previous value, before it was set to zero (between 00:00 and 06:00):
    - With `update homeassistant.statistics set state = 2756.716 where id = 2879` for all valid ids identified.
