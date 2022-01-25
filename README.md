@@ -17,7 +17,7 @@ In this case, there was a peak at 25/1-2022 where produced (consumed) solar was 
    - You may need to identify several that applies to the error.
 2. For the identified meta-ids, run sql command to look at the data:
    - With for instance `select * from homeassistant.statistics where metadata_id = 4`.
-   - In this case it was meta-id 4 `sensor.total_yield` that contained the error where column `state` was 0 for a number of hours.
+   - In this case it was metadata_id 4 `sensor.total_yield` that contained the error where column `state` was 0 for a number of hours.
 3. I updated the column `state` to the previous value, before it was set to zero (between 00:00 and 06:00):
    - With `update homeassistant.statistics set state = 2756.716 where id = 2879` for all valid ids identified.
    - This was during the night where no solar production was made. So it was easy to correct.
