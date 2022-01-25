@@ -17,5 +17,5 @@ I am using MySQL Workbench to connect to MariaDB.
    - You may need to identify several that applies to the error.
 2. For the identified meta-ids, run sql command to look at the data, for instance `select * from homeassistant.statistics where metadata_id = 4`.
    - In this case it was meta-id 4 `sensor.total_yield` that contained the error where column `state` was 0 for a number of hours.
-3. I updated the column `state` to the previous value, before it was set to zero.
+3. I updated the column `state` to the previous value, before it was set to zero (between 00:00 and 06:00).
    - This was during the night where no solar production was made. So it was easy to correct.
