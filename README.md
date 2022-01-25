@@ -7,7 +7,8 @@
 ## Incorrect SMA Energy data
 
 At least one time, the data in Home Assistant for SMA Inverter and Home Manager 2.0 has been wrong.\
-In this case, there was a peak at 25/1-2022 where produced (consumed) solar was over 2700 kWh early in the morning.
+In this case, there was a peak at 25/1-2022 where produced (consumed) solar was over 2700 kWh early in the morning.\
+Others have also had this problem, see [here][https://community.home-assistant.io/t/sma-solar-sensor-pv-gen-meter-showing-inconsistent-data/368280) and [here][https://github.com/home-assistant/core/issues/61838).
 
 ### This is how I identified and corrected the problem.
 
@@ -26,7 +27,10 @@ In this case, there was a peak at 25/1-2022 where produced (consumed) solar was 
    - This was more tricky, as I needed to calculate the increase manually.
    - For all valid ids identified for the above different metadata_ids.
      - Update With `update homeassistant.statistics set sum = 21.105 where id = 3002` for all valid ids identified and updated incremental sum.
-5. In this case i also restarted Home Assistant, but I am not sure if this is needed.
+5. We also need to manually update the sensor `sensor.pv_gen_meter`.
+   - We need to extract the number of kWh that was found in step 3 (in my case 2756.716).
+   - Do this as close to the hour as possible.
+7. In this case i also restarted Home Assistant, but I am not sure if this is necessary.
 
 #### For the InfluxDB history database, the following was performed:
 
