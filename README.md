@@ -9,9 +9,9 @@
 At least one time, the data in Home Assistant for SMA Inverter and Home Manager 2.0 has been wrong.\
 In this case, there was a peak at 25/1-2022 where produced (consumed) solar was over 2700 kWh early in the morning.
 
-#### This is how I identified and corrected the problem.
+### This is how I identified and corrected the problem.
 
-For Recorder database (MariaDB) i am using MySQL Workbench:
+#### For Recorder database (MariaDB) i am using MySQL Workbench:
 
 1. Identify the different meta-id that you need to look at through `select * from homeassistant.statistics_meta`.
    - You may need to identify several that applies to the error.
@@ -26,6 +26,6 @@ For Recorder database (MariaDB) i am using MySQL Workbench:
    - With `update homeassistant.statistics set sum = 21.105 where id = 3002` for all valid ids identified and updated incremental sum.
 5. In this case i also restarted Home Assistant, but I am not sure if this is needed.
 
-For the InfluxDB history database, the following was performed:
+#### For the InfluxDB history database, the following was performed:
 
 1. TBD
