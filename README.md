@@ -23,7 +23,8 @@ For Recorder database (MariaDB) i am using MySQL Workbench:
    - This was during the night where no solar production was made. So it was easy to correct.
 4. I also needed to update the column `sum` to correctly reflect the increase
    - This was more tricky, as I needed to calculate the increase manually.
-   - With `update homeassistant.statistics set sum = 21.105 where id = 3002` for all valid ids identified and updated incremental sum
+   - With `update homeassistant.statistics set sum = 21.105 where id = 3002` for all valid ids identified and updated incremental sum.
+5. In this case i also restarted Home Assistant, but I am not sure if this is needed.
 
 For the InfluxDB history database, the following was performed:
 
