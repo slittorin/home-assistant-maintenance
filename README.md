@@ -2,14 +2,19 @@
 
 ## Table of content
 
-- [Correct SMA Energy data](https://github.com/slittorin/home-assistant-configuration#goal)
+- [Incorrect SMA Energy data](https://github.com/slittorin/home-assistant-maintenance#incorrect-sma-energy-data)
 
-## Correct SMA Energy data
+## Incorrect SMA Energy data
 
-The goal of my Home Assistant installation is to primarily measure and get control of the major cost for my house, electricity.
-Secondarily I would like to be able to control and perform automation activities.
+At least one time, the data in Home Assistant for SMA Inverter and Home Manager 2.0 has been wrong.
+In this case, there was a peak at 25/1-2022 where consumed solar was over 2700 kWh early in the morning.
 
-## Generic information
+#### This is how I identified and corrected the problem.
 
-#### For changes to Home Assistant configuration files:
-1. Goto `Configuration` -> `Settings` -> `Server Controls` and press `Check Configuration`.
+I am using MySQL Workbench to connect to MariaDB.
+
+1. Identify the different meta-id that you need to look at through `select * from homeassistant.statistics_meta`.
+   - You may need to identify several that applies to the error.
+2. For the identified meta-ids, run sql command to look at the data, for instance `select * from homeassistant.statistics where metadata_id = 4`.
+   - In this case it was meta-id 4 `sensor.total_yield` that contained the error where `state` was 0 for a number of hours.
+3. 
