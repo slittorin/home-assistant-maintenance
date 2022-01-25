@@ -20,7 +20,7 @@ Be extra cautious with the sql-update commands, preferably take a backup before 
 
 1. Identify the different meta-id that you need to look at through `select * from homeassistant.statistics_meta`.
    - You may need to identify several that applies to the error.
-   - For this problem the following was valid metadata_id 4 `sensor.total_yield` and 5 `sensor.pv_gen_meter`.
+   - For this problem the following was metadata_id 4 `sensor.total_yield` and 5 `sensor.pv_gen_meter`.
    - Sensor data for these two, resides in both `statistics` (hourly data) and `statistics_short_term` (5 minute data) tables.
 2. For the identified meta-ids, run sql command to look at the data:
    - With:
