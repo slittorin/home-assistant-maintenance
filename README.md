@@ -20,19 +20,22 @@ Be extra cautious with the sql-update commands, preferably take a backup before 
 
 1. Identify the different meta-id that you need to look at through `select * from homeassistant.statistics_meta`.
    - You may need to identify several that applies to the error.
-   - For this problem the following was metadata_id 4 `sensor.total_yield` and 5 `sensor.pv_gen_meter`.
-   - Sensor data for these two, resides in both `statistics` (hourly data) and `statistics_short_term` (5 minute data) tables.
+   - For this problem the following was chosen to investigate:
+     - metadata_id 4: `sensor.total_yield`
+     - metadata_id 5: `sensor.pv_gen_meter`.
+     - metadata_id 8: `sensor.metering_total_yield`.
+     - metadata_id 9: `sensor.metering_total_absorbed`.
+   - Sensor data for these, resides in the following tables:
+     - `statistics` for hourly data.
+     - `statistics_short_term` for 5 minute data.
 2. For the identified meta-ids, run sql command to look at the data:
    - With:
-     - `select * from homeassistant.statistics where metadata_id = 4 order by created desc;`.
-     - `select * from homeassistant.statistics where metadata_id = 5 order by created desc;`.
-     - `select * from homeassistant.statistics_short_term where metadata_id = 4 order by created desc;`.
-     - `select * from homeassistant.statistics_short_term where metadata_id = 5 order by created desc;`.
+     - `select * from homeassistant.TABLE where metadata_id = METADATA_ID order by created desc;`.
    - For this problem, it occured when `state` was set to 0 (zero).
-3. First we need to correct where `state` is 0 (zero).
+3. First we need to correct where `state` is 0 (zero) for identified tables and metadata_ids.
    - Do this by updating `state` column to the last valid value (data is not updating during the period).
 4. Then we need to correct `sum` column so it is correctly reflects the increase.
-   - Do this by updating the `sum` column from the where  `state` column was 0 (zero) to last id.
+   - Do this by updating the `sum` column from the where `state` column was 0 (zero) to last id.
 5. Remember to verify that no new values has been written to the `statistics` and `statistics_short_term` tables.
 
 To update both `state` and `state` column, I copied the data into a excel-matrix and made sql-commands based on the data.
