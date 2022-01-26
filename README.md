@@ -10,7 +10,7 @@ At least one time, the data in Home Assistant for SMA Inverter and Home Manager 
 In this case, there was a peak at 25/1-2022 where produced (consumed) solar was over 2700 kWh early in the morning.\
 Others have also had this problem, see [here](https://community.home-assistant.io/t/sma-solar-sensor-pv-gen-meter-showing-inconsistent-data/368280) and [here](https://github.com/home-assistant/core/issues/61838).
 
-Note that history grapg for `sensor.total_yield` and `sensor.pv_gen_meter` still has a dip to zero in history graph, possibly related to data not being present in the `states` table (see below).
+Note that history graph for `sensor.total_yield` and `sensor.pv_gen_meter` still has a dip to zero in history graph even after correcting the data according to below, possibly related to data not being present in the `states` table (see below).
 
 ### This is how I identified and corrected the problem.
 
