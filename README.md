@@ -47,4 +47,8 @@ I did not utilize the python program suggested above.
 
 #### For the InfluxDB history database, the following was performed:
 
+from(bucket: "ha")
+  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)
+  |> filter(fn: (r) => r["entity_id"] == "total_yield")
+
 1. TBD
