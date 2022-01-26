@@ -10,6 +10,8 @@ At least one time, the data in Home Assistant for SMA Inverter and Home Manager 
 In this case, there was a peak at 25/1-2022 where produced (consumed) solar was over 2700 kWh early in the morning.\
 Others have also had this problem, see [here](https://community.home-assistant.io/t/sma-solar-sensor-pv-gen-meter-showing-inconsistent-data/368280) and [here](https://github.com/home-assistant/core/issues/61838).
 
+Note that history grapg for `sensor.total_yield` and `sensor.pv_gen_meter` still has a dip to zero in history graph, possibly related to data not being present in the `states` table (see below).
+
 ### This is how I identified and corrected the problem.
 
 #### For Recorder database (MariaDB) i am using MySQL Workbench:
@@ -28,6 +30,7 @@ Be extra cautious with the sql-update commands, preferably take a backup before 
    - Sensor data for these, resides in the following tables:
      - `statistics` for hourly data.
      - `statistics_short_term` for 5 minute data.
+   - We could not update any data in the `states` table as nothing was written during the time when SMA integration had problems.
 2. For the identified meta-ids, run sql command to look at the data:
    - With:
      - `select * from homeassistant.TABLE where metadata_id = METADATA_ID order by created desc;`.
@@ -39,10 +42,7 @@ Be extra cautious with the sql-update commands, preferably take a backup before 
 5. Remember to verify that no new values has been written to the tables.
    - If so, they need to be updated.
 
-sensor.total_yield and sensor.pv_gen_meter still has a dip to zero in history graph.
-
-
-To update both `state` and `state` column, I copied the data into a excel-matrix and made sql-commands based on the data.
+To update both `state` and `state` column, I copied the data into a excel-matrix and made sql-commands based on the data, such as `update homeassistant.statistics_short_term set sum = 604.883 where id = 33890;`
 I did not utilize the python program suggested above.
 
 #### For the InfluxDB history database, the following was performed:
