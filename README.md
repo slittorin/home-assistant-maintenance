@@ -44,7 +44,7 @@ Be extra cautious with the sql-update commands, preferably take a backup before 
    - If so, they need to be updated.
 
 To update both `state` and `sum` column, I copied the data into a excel-matrix and made sql-commands based on the data, such as `update homeassistant.statistics_short_term set sum = 604.883 where id = 33890;`
-I did not utilize the python program suggested above.
+I did not utilize the python program suggested in above links.
 
 #### For the InfluxDB history database, the following was performed:
 
