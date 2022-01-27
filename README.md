@@ -22,16 +22,17 @@ Be extra cautious with the sql-update commands, preferably take a backup before 
 
 1. Identify the different meta-id that you need to look at through `select * from homeassistant.statistics_meta`.
    - You may need to identify several that applies to the error.
-   - For this problem the following was chosen to investigate (all have the unit kWh):
-     - metadata_id 4: `sensor.total_yield`
+   - The problem was identified to occur from roughly 2022-01-24 19:00 to roughly 2022-01-25 06:00.
+   - For this problem the following sensor-data was identified to investigate (all have the unit kWh):
+     - metadata_id 4: `sensor.total_yield`.
      - metadata_id 5: `sensor.pv_gen_meter`.
      - metadata_id 8: `sensor.metering_total_yield`.
      - metadata_id 9: `sensor.metering_total_absorbed`.
    - Sensor data for these, resides in the following tables:
      - `statistics` for hourly data.
      - `statistics_short_term` for 5 minute data.
-   - We could not update any data in the `states` table as nothing was written during the time when SMA integration had problems (i.e. as SMA integration did not have any updates, no data was inserted in the the `states` table).
-   - The problem was identified to occur from roughly 2022-01-24 19:00 to roughly 2022-01-25 06:00.
+   - We could not update any data in the `states` table as nothing was written during the time when SMA integration had problems (i.e. as SMA integration did not have any updates, no data was inserted in the the `states` table. Note however that `sensor.metering_total_absorbed` has inserts for the timespan, but not the others).
+
 2. For the identified meta-ids, run sql command to look at the data:
    - With:
      - `select * from homeassistant.TABLE where metadata_id = METADATA_ID order by created desc;`.
