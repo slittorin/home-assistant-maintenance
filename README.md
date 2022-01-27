@@ -31,7 +31,7 @@ Be extra cautious with the sql-update commands, preferably take a backup before 
      - `statistics` for hourly data.
      - `statistics_short_term` for 5 minute data.
    - We could not update any data in the `states` table as nothing was written during the time when SMA integration had problems (i.e. as SMA integration did not have any updates, no data was inserted in the the `states` table).
-   - The problem was identified to occur from roughly 2022-01-24 22:30 to roughly 2022-01-25 06:00.
+   - The problem was identified to occur from roughly 2022-01-24 19:00 to roughly 2022-01-25 06:00.
 2. For the identified meta-ids, run sql command to look at the data:
    - With:
      - `select * from homeassistant.TABLE where metadata_id = METADATA_ID order by created desc;`.
