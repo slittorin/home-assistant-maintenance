@@ -22,7 +22,7 @@ Be extra cautious with the sql-update commands, preferably take a backup before 
 
 1. Identify the different meta-id that you need to look at through `select * from homeassistant.statistics_meta`.
    - You may need to identify several that applies to the error.
-   - For this problem the following was chosen to investigate:
+   - For this problem the following was chosen to investigate (all have the unit kWh):
      - metadata_id 4: `sensor.total_yield`
      - metadata_id 5: `sensor.pv_gen_meter`.
      - metadata_id 8: `sensor.metering_total_yield`.
