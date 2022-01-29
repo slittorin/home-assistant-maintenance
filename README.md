@@ -54,8 +54,12 @@ I did not utilize the python program suggested in above links.
 
 #### For the InfluxDB history database, the following was performed:
 
+Since the data in the states table is wrong, we can assume that the data is also wrong in the InfluxDB database.
+
+1. Logon to InfluxDB databas and run the following in `Data Explorer` (Table view):
+```
 from(bucket: "ha")
   |> range(start: v.timeRangeStart, stop: v.timeRangeStop)
   |> filter(fn: (r) => r["entity_id"] == "total_yield")
-
-1. TBD
+```
+2. TBD
