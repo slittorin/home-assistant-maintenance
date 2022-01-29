@@ -43,13 +43,13 @@ Be extra cautious with the sql-update commands, preferably take a backup before 
 5. Remember to verify that no new values has been written to the tables.
    - If so, they need to be updated.
 6. For the `states` table We there was usually no data saved when the error occured (or 'unknown'/'unavailable' was written), but the following sensors needed correction (we corrected these, even though they will be removed when purge-period comes):
-   - `sensor.total_yield` - One state_id was wrong: `update homeassistant.states set state = 2756.716 where state_id = 1289802;`.
+   - `sensor.total_yield` - One state_id was wrong.
    - `sensor.pv_gen_meter` - One state_id was wrong.
    - `sensor.metering_total_yield` - One state_id was wrong.
    - `sensor.metering_total_absorbed` has correct inserts for the timespan.
    - `sensor.metering_total_yield_compensation` - One state_id was wrong.
  
-To update both `state` and `sum` column, I copied the data into a excel-matrix and made sql-commands based on the data, such as `update homeassistant.statistics_short_term set sum = 604.883 where id = 33890;`
+To update both `state` and `sum` column, I copied the data into a excel-matrix and made sql-commands based on the data, such as `update homeassistant.statistics_short_term set sum = 604.883 where id = 33890;` and `update homeassistant.states set state = 2756.716 where state_id = 1289802;`.
 I did not utilize the python program suggested in above links.
 
 #### For the InfluxDB history database, the following was performed:
