@@ -54,12 +54,21 @@ I did not utilize the python program suggested in above links.
 
 #### For the InfluxDB history database, the following was performed:
 
-Since the data in the states table is wrong, we can assume that the data is also wrong in the InfluxDB database.
+Since the data in the `states` table is wrong, we can assume that the data is also wrong in the InfluxDB database as states are pushed here.
 
-1. Logon to InfluxDB databas and run the following in `Data Explorer` (Table view):
+We cannot correct the data in InfluxDB directly through commands due to the design of the time-series database, instead we import corrected data so the data is overwritten.
+
+1. Logon to InfluxDB databas and run the following in `Data Explorer` (Table view) for the above identified sensors and the valid time-ranges, according to:
 ```
 from(bucket: "ha")
-  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)
+  |> range(start: 2022-01-24T00:00:00Z, stop: 2022-01-26T12:00:00Z)
   |> filter(fn: (r) => r["entity_id"] == "total_yield")
 ```
-2. TBD
+2. Export each sensor to csv.
+3. In excel, isolate if there are wrong data during the timespan.
+   - In my case, `_value` was 0 (zero) for `_time` 2022-01-25T00:42:43.152029Z for `total_yield`.
+   - And similar for the following entity_ids:
+     - asd
+   - Create a new .csv file with only the corrected row, and the first row with the field names.
+4. Import the .csv file with the corrected data.
+5. Iterate through all above sensors and correct.
