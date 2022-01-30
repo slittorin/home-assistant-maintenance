@@ -70,13 +70,11 @@ from(bucket: "ha")
    - And similar for the following entity_ids:
      - asd
 4. Create a new .csv file with only the corrected row, and importantly:
-     - Remove the columns [empty], result, table, \_start, \_stop.
-       - Left is only: \_time, \_value, \_field, \_measurement, domain, entity_id
      - The file with header looks as follows (we needed to skip the type on \_value):
 ```
 #datatype long,dateTime:RFC3339,,string,string,string,string,string
-table,_time,_value,_field,_measurement,domain,entity_id,version
-3,2022-01-25T00:42:43.152029Z,2756.716,value,kWh,sensor,total_yield,2
+table,_time,_value,_field,_measurement,domain,entity_id
+3,2022-01-25T00:42:43.152029Z,2756.716,value,kWh,sensor,total_yield
 ```
 5. Upload the files to server1 and import to InfluxDB with:
    - `sudo docker cp /srv/ha-history-db/FILE ha-history-db:/tmp`.
