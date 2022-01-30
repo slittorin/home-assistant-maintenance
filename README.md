@@ -72,10 +72,7 @@ from(bucket: "ha")
    - And similar for the following entity_ids:
      - `pv_gen_meter`.
      - `metering_total_yield`.
-     - ``.
-     - ``.
-     - ``.
-     - ``.
+     - `metering_total_yield_compensation`.
 5. Go to the InfluxDB container on server1:
    - `sudo docker-compose exec ha-history-db bash`.
      - With shell in the container, delete the spefic _time (I did not manage to overwrite data with export/import-csv):
