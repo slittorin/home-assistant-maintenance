@@ -69,18 +69,13 @@ from(bucket: "ha")
    - In my case, `_value` was 0 (zero) for `_time` 2022-01-25T00:42:43.152029Z for `total_yield`.
    - And similar for the following entity_ids:
      - asd
-4. Create a new .csv file with only the corrected row, and importantly:
-     - The file with header looks as follows (we needed to skip the type on \_value):
-```
-#datatype long,dateTime:RFC3339,,string,string,string,string,string
-table,_time,_value,_field,_measurement,domain,entity_id
-3,2022-01-25T00:42:43.152029Z,2756.716,value,kWh,sensor,total_yield
-```
-5. Upload the files to server1 and import to InfluxDB with:
-   - `sudo docker cp /srv/ha-history-db/FILE ha-history-db:/tmp`.
+5. Go to the InfluxDB container on server1:
    - `sudo docker-compose exec ha-history-db bash`.
-     - With shell in the container:
-       - Go to directory `/tmp`.
-       - `influx write -b ha -f ./FILE`.
-         - No error/output should occur.
-7. Iterate through all above sensors and correct.
+     - With shell in the container, delete the spefic _time (I did not manage to overwrite data with export/import-csv):
+```
+influx delete -b ha \
+  --start '2022-01-25T00:42:43.152029Z' \
+  --stop '2022-01-25T00:42:43.152029Z'
+```
+    - No error/output should occur.
+7. Iterate through all above sensors and correct where necessary.
