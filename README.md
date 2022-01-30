@@ -58,6 +58,8 @@ Since the data in the `states` table is wrong, we can assume that the data is al
 
 We cannot correct the data in InfluxDB directly through commands due to the design of the time-series database, instead we import corrected data so the data is overwritten.
 
+Be extra cautious with the delete command, preferably take a backup before updating.
+
 1. Logon to InfluxDB databas and run the following in `Data Explorer` (Table view) for the above identified sensors and the valid time-ranges, according to:
 ```
 from(bucket: "ha")
@@ -68,14 +70,18 @@ from(bucket: "ha")
 3. In excel, isolate if there are wrong data during the timespan.
    - In my case, `_value` was 0 (zero) for `_time` 2022-01-25T00:42:43.152029Z for `total_yield`.
    - And similar for the following entity_ids:
-     - asd
+     - `pv_gen_meter`.
+     - `metering_total_yield`.
+     - ``.
+     - ``.
+     - ``.
+     - ``.
 5. Go to the InfluxDB container on server1:
    - `sudo docker-compose exec ha-history-db bash`.
      - With shell in the container, delete the spefic _time (I did not manage to overwrite data with export/import-csv):
-```
-influx delete -b ha \
-  --start '2022-01-25T00:42:43.152029Z' \
-  --stop '2022-01-25T00:42:43.152029Z'
-```
-    - No error/output should occur.
-7. Iterate through all above sensors and correct where necessary.
+       - Note that you need to be precise with the timestamp, as we do not use '--predicate', and would otherwise delete extensive amount of data.
+         ```
+         influx delete -b ha --start '2022-01-25T00:42:43.152029Z' --stop '2022-01-25T00:42:43.152029Z'
+         ```
+         - No error/output should occur.
+    - Iterate through all above sensors and correct where necessary.
