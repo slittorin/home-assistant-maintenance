@@ -29,7 +29,7 @@ Be extra cautious with the sql-update commands, preferably take a backup before 
      - metadata_id 8: `sensor.metering_total_yield`.
      - metadata_id 9: `sensor.metering_total_absorbed`.
      - metadata_id 16: `sensor.metering_total_absorbed_cost`.
-     - metadata_if 17: `sensor.metering_total_yield_compensation`.
+     - metadata_id 17: `sensor.metering_total_yield_compensation`.
    - Sensor data for these, resides in the following statistics-tables:
      - `statistics` for hourly data.
      - `statistics_short_term` for 5 minute data.
