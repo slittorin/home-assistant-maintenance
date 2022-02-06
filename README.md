@@ -7,7 +7,9 @@
 - Errors, problems and challenges:
   - [Incorrect SMA Energy data](https://github.com/slittorin/home-assistant-maintenance#incorrect-sma-energy-data)
 
-## Add domain sensors
+## Regular maintenance
+
+### Add domain sensors
 
 With they way we are tracking data, we need add sensors when we add integrations/add-ons/devices to our HA system.
 
@@ -17,7 +19,9 @@ With they way we are tracking data, we need add sensors when we add integrations
 2. Where required, add domains and sensors.
    - Update also [Visualization for Number of domains and entities](https://github.com/slittorin/home-assistant-visualization#number-of-domains-and-entities).
 
-## Incorrect SMA Energy data
+## Errors, problems and challenges:
+
+### Incorrect SMA Energy data
 
 The data in Home Assistant for SMA Inverter and Home Manager 2.0 has been wrong.
 
