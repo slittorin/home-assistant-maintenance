@@ -3,7 +3,7 @@
 ## Table of content
 
 - Regular maintenance:
-  - [Add domain sensors](xxx).
+  - [Add domain sensors](https://github.com/slittorin/home-assistant-maintenance#add-domain-sensors).
 - Errors, problems and challenges:
   - [Incorrect SMA Energy data](https://github.com/slittorin/home-assistant-maintenance#incorrect-sma-energy-data)
 
