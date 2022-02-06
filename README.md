@@ -2,7 +2,20 @@
 
 ## Table of content
 
-- [Incorrect SMA Energy data](https://github.com/slittorin/home-assistant-maintenance#incorrect-sma-energy-data)
+- Regular maintenance:
+  - [Add domain sensors](xxx).
+- Errors, problems and challenges:
+  - [Incorrect SMA Energy data](https://github.com/slittorin/home-assistant-maintenance#incorrect-sma-energy-data)
+
+## Add domain sensors
+
+With they way we are tracking data, we need add sensors when we add integrations/add-ons/devices to our HA system.
+
+1. Keep track if there are new domains that are not tracked.
+   - Go to Dashboard Home Assistant.
+   - Check the listed domains towards those documented in [Domains and Entities configuration](https://github.com/slittorin/home-assistant-configuration#package---home-assistant-system---domains-and-entities).
+2. Where required, add domains and sensors.
+   - Update also 
 
 ## Incorrect SMA Energy data
 
