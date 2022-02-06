@@ -15,7 +15,7 @@ With they way we are tracking data, we need add sensors when we add integrations
    - Go to Dashboard Home Assistant.
    - Check the listed domains towards those documented in [Domains and Entities configuration](https://github.com/slittorin/home-assistant-configuration#package---home-assistant-system---domains-and-entities).
 2. Where required, add domains and sensors.
-   - Update also 
+   - Update also [Visualization for Number of domains and entities](https://github.com/slittorin/home-assistant-visualization#number-of-domains-and-entities).
 
 ## Incorrect SMA Energy data
 
