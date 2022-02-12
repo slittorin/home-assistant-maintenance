@@ -9,6 +9,31 @@
 
 ## Regular maintenance
 
+### Check updates for Home Assistant
+
+Check regularly if there is any update for Home Assistant: Core, Operation System or Supervisor.\
+Install through the UI.\
+Note that you are encoruaged to take backup prior to any upgrade.
+
+### Check updates for server1
+
+Check regularly if there is any update for server1 (Raspberry PI).\
+Install through normal `apt` commands.
+
+### Check updates for InfluxDB
+
+Check regularly if there is any important update that is required for InfluxDB docker-container.\
+Note that you are encoruaged to take backup prior to any upgrade.
+
+Check [Setup instructions](https://github.com/slittorin/home-assistant-setup#installation-for-influxdb).
+
+### Check updates for Grafana
+
+Check regularly if there is any important update that is required for Grafana docker-container.\
+Note that you are encoruaged to take backup prior to any upgrade.
+
+Check [Setup instructions](https://github.com/slittorin/home-assistant-setup#installation-for-grafana).
+
 ### Add domain sensors
 
 With they way we are tracking data, we need add sensors when we add integrations/add-ons/devices to our HA system.
