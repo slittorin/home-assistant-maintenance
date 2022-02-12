@@ -3,6 +3,10 @@
 ## Table of content
 
 - Regular maintenance:
+  - [Check updates for Home Assistant](https://github.com/slittorin/home-assistant-maintenance#check-updates-for-home-assistant)
+  - [Check updates for server1](https://github.com/slittorin/home-assistant-maintenance#check-updates-for-server1)
+  - [Check updates for InfluxDB](https://github.com/slittorin/home-assistant-maintenance#check-updates-for-influxdb)
+  - [Check updates for Grafana](https://github.com/slittorin/home-assistant-maintenance#check-updates-for-grafana)
   - [Add domain sensors](https://github.com/slittorin/home-assistant-maintenance#add-domain-sensors).
 - Errors, problems and challenges:
   - [Incorrect SMA Energy data](https://github.com/slittorin/home-assistant-maintenance#incorrect-sma-energy-data)
