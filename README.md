@@ -8,6 +8,7 @@
   - [Check updates for InfluxDB](https://github.com/slittorin/home-assistant-maintenance#check-updates-for-influxdb)
   - [Check updates for Grafana](https://github.com/slittorin/home-assistant-maintenance#check-updates-for-grafana)
   - [Add domain sensors](https://github.com/slittorin/home-assistant-maintenance#add-domain-sensors).
+  - [Exclude sensors for InfluxDB integration]()
 - Errors, problems and challenges:
   - [Incorrect SMA Energy data](https://github.com/slittorin/home-assistant-maintenance#incorrect-sma-energy-data)
 
@@ -48,6 +49,26 @@ With they way we are tracking data, we need add sensors when we add integrations
 2. Where required, add domains and sensors.
    - Update also [Visualization for Number of domains and entities](https://github.com/slittorin/home-assistant-visualization#number-of-domains-and-entities).
 
+### Exclude sensors for InfluxDB integration
+
+See first [Governing principles](https://github.com/slittorin/home-assistant-setup#governing-principles) on how Historical data and Database retention is setup.
+
+There are some integrations that will generate a huge amount of states, for instance the SMA Inverter and Home Manager integration will refresh each 5 second and give new state/events.\
+This will fill up the states and events table in the Recorder-database, but that is ok with our setup as we run MariaDB and have lots of space. Also the data will roll-over when `purge_keep_days hits the data.
+However, states will still be written to the InfluxDB database, and therefore over time cause the database to be substantially large.
+
+Therefore we need from time to time to analyze the number of events/states in the database, to get a sense on what type of data that is written and if it is necessary to exclude some sensors to write data to InfluxDB.
+
+Note here that at this point we do not care about the data in the `statistics` and `statistics_short_term`-tables as these are written oncce per hour, and once every 15 minutes (min, max, medium).
+
+How I did the analysis for my setup:
+1. Run the following sql-command in for instance MySQL Workbench, to get the 30 tables with most rows, in percentage of rows.
+   ```sql
+   select count(*) into @rows from homeassistant.states;
+   select entity_id, ((count(distinct state_id)/@rows)*100) as Pct from homeassistant.states group by entity_id order by COUNT(*) desc limit 0,30;
+   ```
+2.
+
 ## Errors, problems and challenges:
 
 ### Incorrect SMA Energy data
@@ -66,7 +87,8 @@ Note that history graph for `sensor.total_yield` and `sensor.pv_gen_meter` still
 
 Note that one only has 5 minute window to correct, otherwise `statistics_short_term` table will have new data to correct (and if over each hour, `statistics` table.
 
-Be extra cautious with the sql-update commands, preferably take a backup before updating.
+Be extra cautious with the sql-update commands, preferably take a backup before updating.\
+Use for instance MySQL Workbench to perform sql commands.
 
 1. Identify the different meta-id that you need to look at through `select * from homeassistant.statistics_meta`.
    - You may need to identify several that applies to the error.
