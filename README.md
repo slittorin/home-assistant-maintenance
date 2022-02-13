@@ -59,7 +59,7 @@ However, states will still be written to the InfluxDB database, and therefore ov
 
 Therefore we need from time to time to analyze the number of events/states in the database, to get a sense on what type of data that is written and if it is necessary to exclude some sensors to write data to InfluxDB.
 
-Note here that at this point we do not care about the data in the `statistics` and `statistics_short_term`-tables as these are written oncce per hour, and once every 15 minutes (min, max, medium).
+Note here that at this point we do not care about the data in the `statistics` table as this gets data written once per hour (`statistics_short_term` gets written every 5 minutes, but is purged according to Recorder setting).
 
 How I did the analysis for my setup:
 1. Run the following sql-command in for instance MySQL Workbench, to get the 30 tables with most rows, in percentage of rows.
