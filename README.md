@@ -75,7 +75,7 @@ How I did the analysis for my setup:
         - Note however that not all data is written to the history tables.
           - Check with the following (change statistics_id to your full entity id) if there is data in the history tables:
             ```sql
-            select * from homeassistant.statistics_meta where statistic_id = 'sensor.metering_current_l2'
+            select * from homeassistant.statistics_meta where statistic_id = 'sensor.metering_current_l1'
             ```
             If it is not, you need to create the statistics sensors yourself.
     - We could of course change the configuration so it is not refreshed each 5 second, but we may want to have the data polled as much as possible to get the top Amps and Watts.
