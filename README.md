@@ -70,14 +70,14 @@ How I did the analysis for my setup:
 2. Base on the output, you need to investigate what these sensors provide for value.
   - Such as `sensor.metering_current_l1` (1 through 3) is the ampere every 5 seconds, and accounts for 8% of by states-database.
     - Take that times 3 for the ampere, and similar for `sensor.metering_active_power_draw_l1` (1 through 3), and that will account for 46% of the states-table, and hence also account for 48% of the data written to InfluxDB.
-    - It is more sense to not write this to the database, but instead add a statistics-sensor that will keep track of the min, max and mean-values for the last hour.
+    - It is more sense to not write this to the Influx-database, but instead add a statistics-sensor that will keep track of the min, max and mean-values for the last hour (or similar).
       - We either create the sensors ourselves, or allow HA to get the data from the `statistics` table with history graph.
         - Note however that not all data is written to the history tables.
           - Check with the following (change statistics_id to your full entity id) if there is data in the history tables:
             ```sql
             select * from homeassistant.statistics_meta where statistic_id = 'sensor.metering_current_l1'
             ```
-            If it is not, you need to create the statistics sensors yourself.
+            If it is not, you may want to create the statistics sensors yourself.
     - We could of course change the configuration so it is not refreshed each 5 second, but we may want to have the data polled as much as possible to get the top Amps and Watts.
 
 ## Errors, problems and challenges:
