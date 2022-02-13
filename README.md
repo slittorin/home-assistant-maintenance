@@ -7,7 +7,7 @@
   - [Check updates for server1](https://github.com/slittorin/home-assistant-maintenance#check-updates-for-server1)
   - [Check updates for InfluxDB](https://github.com/slittorin/home-assistant-maintenance#check-updates-for-influxdb)
   - [Check updates for Grafana](https://github.com/slittorin/home-assistant-maintenance#check-updates-for-grafana)
-  - [Add domain sensors](https://github.com/slittorin/home-assistant-maintenance#add-domain-sensors).
+  - [Add domain sensors](https://github.com/slittorin/home-assistant-maintenance#add-domain-sensors)
   - [Exclude sensors for InfluxDB integration](https://github.com/slittorin/home-assistant-maintenance#exclude-sensors-for-influxdb-integration)
 - Errors, problems and challenges:
   - [Incorrect SMA Energy data](https://github.com/slittorin/home-assistant-maintenance#incorrect-sma-energy-data)
@@ -67,7 +67,12 @@ How I did the analysis for my setup:
    select count(*) into @rows from homeassistant.states;
    select entity_id, ((count(distinct state_id)/@rows)*100) as Pct from homeassistant.states group by entity_id order by COUNT(*) desc limit 0,30;
    ```
-2.
+2. Base on the output, you need to investigate what these sensors provide for value.
+  - Such as `sensor.metering_current_l1` (1 through 3) is the ampere every 5 seconds, and accounts for 8% of by states-database.
+    - Take that times 3 for the ampere, and similar for `sensor.metering_active_power_draw_l2`, that will account for 46% of the states-table, and hence also account for 48% of the data written to InfluxDB.
+    - It is more sense to not write this to the database, but instead add a statistics-sensor that will keep track of the min, max and mean-values for the last hour.
+      - We either create the sensors ourselves, or allow HA to get the data from the `statistics` table with history graph.
+    - We could of course change the configuration so it is not refreshed each 5 second, but we may want to have the data polled as much as possible to get the top Amps and Watts.
 
 ## Errors, problems and challenges:
 
