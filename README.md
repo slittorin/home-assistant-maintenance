@@ -8,7 +8,7 @@
   - [Check updates for InfluxDB](https://github.com/slittorin/home-assistant-maintenance#check-updates-for-influxdb)
   - [Check updates for Grafana](https://github.com/slittorin/home-assistant-maintenance#check-updates-for-grafana)
   - [Add domain sensors](https://github.com/slittorin/home-assistant-maintenance#add-domain-sensors).
-  - [Exclude sensors for InfluxDB integration]()
+  - [Exclude sensors for InfluxDB integration](https://github.com/slittorin/home-assistant-maintenance#exclude-sensors-for-influxdb-integration)
 - Errors, problems and challenges:
   - [Incorrect SMA Energy data](https://github.com/slittorin/home-assistant-maintenance#incorrect-sma-energy-data)
 
