@@ -53,13 +53,16 @@ With they way we are tracking data, we need add sensors when we add integrations
 
 See first [Governing principles](https://github.com/slittorin/home-assistant-setup#governing-principles) on how Historical data and Database retention is setup.
 
-There are some integrations that will generate a huge amount of states, for instance the SMA Inverter and Home Manager integration will refresh each 5 second and give new state/events.\
-This will fill up the states and events table in the Recorder-database, but that is ok with our setup as we run MariaDB and have lots of space. Also the data will roll-over when `purge_keep_days` hits the data.
+There are some integrations that will generate a huge amount of states, for instance the SMA Inverter and Home Manager integration will refresh each 5 second and give new state/events.
+
+And as we normally cannot change the poll/scan-interval through yaml-configuration for integrations, we only have the option to either disable `Enable polling for updates` for the integration (and make manual trigger for service `homeassistant.update_entity`), or to create exclude sensor/states to be written.
+
+Integrations with swift state changes will fill up the states and events table in the Recorder-database, but that is ok with our setup as we run MariaDB and have lots of space. Also the data will roll-over when `purge_keep_days` hits the data.\
 However, states will still be written to the InfluxDB database, and therefore over time cause the database to be substantially large.
 
-Therefore we need from time to time to analyze the number of events/states in the database, to get a sense on what type of data that is written and if it is necessary to exclude some sensors to write data to InfluxDB.
+Therefore we need from time to time to analyze the number of events/states in the database, to get a sense on what type of data that is written and if it is necessary to exclude some sensors from writing data to InfluxDB.
 
-Note here that at this point we do not care about the data in the `statistics` table as this gets data written once per hour (`statistics_short_term` gets written every 5 minutes, but is purged according to Recorder setting).
+Note here that at this point we do not care about the data volume in the `statistics` table as this gets data written once per hour (`statistics_short_term` gets written every 5 minutes, but is purged according to Recorder setting).
 
 How I did the analysis for my setup:
 1. Run the following sql-command in for instance MySQL Workbench, to get the 30 tables with most rows, in percentage of rows.
@@ -68,17 +71,16 @@ How I did the analysis for my setup:
    select entity_id, ((count(distinct state_id)/@rows)*100) as Pct from homeassistant.states group by entity_id order by COUNT(*) desc limit 0,30;
    ```
 2. Base on the output, you need to investigate what these sensors provide for value.
-  - Such as `sensor.metering_current_l1` (1 through 3) is the ampere every 5 seconds, and accounts for 8% of by states-database.
+  - Such as `sensor.metering_current_l1` (1 through 3) is the ampere every 5 seconds, and accounts for 8% of by states-database (that is roughly 900MB in size for 30 days of data).
     - Take that times 3 for the ampere, and similar for `sensor.metering_active_power_draw_l1` (1 through 3), and that will account for 46% of the states-table, and hence also account for 48% of the data written to InfluxDB.
     - It is more sense to not write this to the Influx-database, but instead add a statistics-sensor that will keep track of the min, max and mean-values for the last hour (or similar).
       - We either create the sensors ourselves, or allow HA to get the data from the `statistics` table with history graph.
-        - Note however that not all data is written to the history tables.
+        - Note however that not all data is written to the history tables. See [Governing principles in setup](https://github.com/slittorin/home-assistant-setup#governing-principles).
           - Check with the following (change statistics_id to your full entity id) if there is data in the history tables:
             ```sql
             select * from homeassistant.statistics_meta where statistic_id = 'sensor.metering_current_l1'
             ```
             If it is not, you may want to create the statistics sensors yourself.
-    - We could of course change the configuration so it is not refreshed each 5 second, but we may want to have the data polled as much as possible to get the top Amps and Watts.
 
 ## Errors, problems and challenges:
 
