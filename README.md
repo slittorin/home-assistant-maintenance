@@ -72,7 +72,7 @@ How I did the analysis for my setup:
    ```
 2. Base on the output, you need to investigate what these sensors provide for value.
   - Such as `sensor.metering_current_l1` (1 through 3) is the ampere every 5 seconds, and accounts for 8% of by states-database (that is roughly 900MB in size for 30 days of data).
-    - Take that times 3 for the ampere, and similar for `sensor.metering_active_power_draw_l1` (1 through 3), and that will account for 46% of the states-table, and hence also account for 48% of the data written to InfluxDB.
+    - Take that times 3 for the ampere, and similar for `sensor.metering_active_power_draw_l1` (1 through 3), and that will account for 46% of the states-table, and hence also account for 46% of the data written to InfluxDB (roughly 430MB per month).
     - It is more sense to not write this to the Influx-database, but instead add a statistics-sensor that will keep track of the min, max and mean-values for the last hour (or similar).
       - We either create the sensors ourselves, or allow HA to get the data from the `statistics` table with history graph.
         - Note however that not all data is written to the history tables. See [Governing principles in setup](https://github.com/slittorin/home-assistant-setup#governing-principles).
