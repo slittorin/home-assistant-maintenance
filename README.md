@@ -55,7 +55,7 @@ See first [Governing principles](https://github.com/slittorin/home-assistant-set
 
 There are some integrations that will generate a huge amount of states, for instance the SMA Inverter and Home Manager integration will refresh each 5 second and give new state/events.
 
-And as we normally cannot change the poll/scan-interval through yaml-configuration for integrations, we only have the option to either disable `Enable polling for updates` for the integration (and make manual trigger for service `homeassistant.update_entity`), or to create exclude sensor/states to be written.
+And as we normally cannot change the poll/scan-interval through yaml-configuration for integrations, we only have the option to either disable `Enable polling for updates` for the integration (and make manual trigger for service `homeassistant.update_entity`), or to exclude sensor/states to be written.
 
 Integrations with swift state changes will fill up the states and events table in the Recorder-database, but that is ok with our setup as we run MariaDB and have lots of space. Also the data will roll-over when `purge_keep_days` hits the data.\
 However, states will still be written to the InfluxDB database, and therefore over time cause the database to be substantially large.
