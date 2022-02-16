@@ -40,7 +40,7 @@ Note that you are encoruaged to take backup prior to any upgrade.
 
 Check [Setup instructions](https://github.com/slittorin/home-assistant-setup#installation-for-grafana).
 
-### Remove obsolete entities
+### Remove obsolete or faulty entities
 
 From time to time, specifically when you are testing and adding capabilities, there will be obsolete entities/sensors that can be removed.
 
