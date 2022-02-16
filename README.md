@@ -7,7 +7,7 @@
   - [Check updates for server1](https://github.com/slittorin/home-assistant-maintenance#check-updates-for-server1)
   - [Check updates for InfluxDB](https://github.com/slittorin/home-assistant-maintenance#check-updates-for-influxdb)
   - [Check updates for Grafana](https://github.com/slittorin/home-assistant-maintenance#check-updates-for-grafana)
-  - [Remove obsolete entities]()
+  - [Remove obsolete entities](https://github.com/slittorin/home-assistant-maintenance#remove-obsolete-or-faulty-entities)
   - [Add domain sensors](https://github.com/slittorin/home-assistant-maintenance#add-domain-sensors)
   - [Exclude sensors for InfluxDB integration](https://github.com/slittorin/home-assistant-maintenance#exclude-sensors-for-influxdb-integration)
 - Errors, problems and challenges:
