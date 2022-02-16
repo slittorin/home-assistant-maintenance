@@ -7,6 +7,7 @@
   - [Check updates for server1](https://github.com/slittorin/home-assistant-maintenance#check-updates-for-server1)
   - [Check updates for InfluxDB](https://github.com/slittorin/home-assistant-maintenance#check-updates-for-influxdb)
   - [Check updates for Grafana](https://github.com/slittorin/home-assistant-maintenance#check-updates-for-grafana)
+  - [Remove obsolete entities]()
   - [Add domain sensors](https://github.com/slittorin/home-assistant-maintenance#add-domain-sensors)
   - [Exclude sensors for InfluxDB integration](https://github.com/slittorin/home-assistant-maintenance#exclude-sensors-for-influxdb-integration)
 - Errors, problems and challenges:
@@ -38,6 +39,25 @@ Check regularly if there is any important update that is required for Grafana do
 Note that you are encoruaged to take backup prior to any upgrade.
 
 Check [Setup instructions](https://github.com/slittorin/home-assistant-setup#installation-for-grafana).
+
+### Remove obsolete entities
+
+From time to time, specifically when you are testing and adding capabilities, there will be obsolete entities/sensors that can be removed.
+
+Perform the following:
+- In Home Assistant through `Developer Tools` -> `Statistics` tab:
+- For entities marked with `Fix issue`.
+- Isolate first if the entity can be removed:
+  - For instance test related sensors, or entities created during dev/test.
+  - Click on the row (not `Fix issue`) and `Remove entity'.
+- For `The unit of this entity changed from`:
+  - If you want to correct the unit in the database, press `Fix issue` and `Update the historical statistics values`.
+- For `There is no state availabile for this entity`:
+  - If you want to remove this entity, press `Fix issue` and `Remove`.
+- For `The unit of this entity changed from`: 
+  - If you want to remove this entity, click on the row (not `Fix issue`) and `Remove entity'.
+- For `The unit of this entity doesn't atch a unit of the device class`:
+  - Correct the `unit_of_measurement` in the yaml-file and reload the sensors (or restart HA).
 
 ### Add domain sensors
 
