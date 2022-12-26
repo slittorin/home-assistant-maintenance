@@ -12,7 +12,7 @@
   - [Exclude sensors for InfluxDB integration](https://github.com/slittorin/home-assistant-maintenance#exclude-sensors-for-influxdb-integration)
 - Errors, problems and challenges:
   - [Incorrect SMA Energy data](https://github.com/slittorin/home-assistant-maintenance#incorrect-sma-energy-data)
-  - [Incorrect SMA Energy data](https://github.com/slittorin/home-assistant-maintenance#incorrect-sma-energy-data)
+  - [Incorrect SMA Energy data](https://github.com/slittorin/home-assistant-maintenance#incorrect-balboa-spa-data)
 
 ## Regular maintenance
 
