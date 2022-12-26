@@ -196,6 +196,8 @@ After analysis it appears that the data was wrong between 2022-12-08 01:20 and 2
 
 Since the sensor `balboa_spa_heater_running_time_hour` is also used by `balboa_spa_heater_consumption_hour`, `balboa_spa_circulation_pump_heater_consumption_hour`, `balboa_spa_heater_cost_hour` and `balboa_spa_circulationpump_heater_cost_hour` these are also wrong (note that `balboa_spa_circulationpump_consumption_hour` was not wrong).
 
+We therefore need to delete data (we cannot restore/correct any data).
+
 #### For Recorder database (MariaDB) i am using MySQL Workbench and excel to correct:
 
 Since the database structure has been changed a few version back (at writing, the version is 2022.11.2), we cannot reuse all from the error with SMA-data.
