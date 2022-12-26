@@ -179,7 +179,7 @@ from(bucket: "ha")
      - `metering_total_yield_compensation`.
 5. Go to the InfluxDB container on server1:
    - `sudo docker-compose exec ha-history-db bash`.
-     - With shell in the container, delete the spefic _time (I did not manage to overwrite data with export/import-csv):
+     - With shell in the container, delete the specific _time (I did not manage to overwrite data with export/import-csv):
        - Note that you need to be precise with the timestamp, as we do not use '--predicate', and would otherwise (potentially) delete extensive amount of data.
          ```
          influx delete -b ha --start '2022-01-25T00:42:43.152029Z' --stop '2022-01-25T00:42:43.152029Z'
@@ -216,7 +216,6 @@ Since the data in the `states` table is wrong, we can assume that the data is al
 We cannot correct the data in InfluxDB directly through commands due to the design of the time-series database, instead we import corrected data so the data is overwritten.
 
 Be extra cautious with the delete command, preferably take a backup before updating.
-(I tried `--predicate 'entity_id="balboa_spa_circulation_pump_heater_consumption_hour"'` but it did not delete data. Bug?)
 
 1. Logon to InfluxDB databas and run the following in `Data Explorer` (Table view) for the above identified sensors and the valid time-ranges, according to:
 ```
@@ -224,20 +223,18 @@ from(bucket: "ha")
   |> range(start: 2022-12-08T01:20:00Z, stop: 2022-12-15T08:05:00Z)
   |> filter(fn: (r) => r["entity_id"] == "balboa_spa_heater_consumption_hour" and r["_field"] == "value")
 ```
-2. Export each sensor to csv.
-3. In excel, isolate the timespan that is wrong.
    - And similar for the following entity_ids:
      - `balboa_spa_heater_running_time_hour`.
      - `balboa_spa_circulation_pump_heater_consumption_hour`.
      - `balboa_spa_heater_cost_hour`.
      - `balboa_spa_circulationpump_heater_cost_hour`.
+2. Export each sensor to csv.
+3. In excel, isolate the timespan that is wrong.
 5. Go to the InfluxDB container on server1:
    - `sudo docker-compose exec ha-history-db bash`.
-     - With shell in the container, delete the spefic _time (I did not manage to overwrite data with export/import-csv):
-       - Note that you need to be precise with the timestamp, as we do not use '--predicate', and would otherwise (potentially) delete extensive amount of data.
-         ```
-         influx delete -b ha --start '2022-01-25T00:42:43.152029Z' --stop '2022-01-25T00:42:43.152029Z'
-         ```
-         - No error/output should occur.
+     - With shell in the container, delete the specific `entity_id` with start and stop according to first and latest according to export above.
+       ```
+       influx delete -b ha --start '2022-12-08T02:00:47.029684Z' --stop '2022-12-15T08:00:02.017015Z' --predicate 'entity_id="balboa_spa_circulation_pump_heater_consumption_hour"'
+       ```
+       - No error/output should occur.
     - Iterate through all above sensors and correct where necessary.
-    - Note that this will take time as each commit will take 3-5 seconds.
