@@ -180,7 +180,7 @@ from(bucket: "ha")
 5. Go to the InfluxDB container on server1:
    - `sudo docker-compose exec ha-history-db bash`.
      - With shell in the container, delete the spefic _time (I did not manage to overwrite data with export/import-csv):
-       - Note that you need to be precise with the timestamp, as we do not use '--predicate', and would otherwise delete extensive amount of data.
+       - Note that you need to be precise with the timestamp, as we do not use '--predicate', and would otherwise (potentially) delete extensive amount of data.
          ```
          influx delete -b ha --start '2022-01-25T00:42:43.152029Z' --stop '2022-01-25T00:42:43.152029Z'
          ```
@@ -194,18 +194,20 @@ It appears that it started to register time the heater was on, even though the u
 
 After analysis it appears that the data was wrong between 2022-12-08 01:20 and 2022-12-15 08:05.
 
-Since the sensor `balboa_spa_heater_running_time_hour` is also used by `balboa_spa_heater_consumption_hour` and `balboa_spa_circulation_pump_heater_consumption_hour` these are also wrong (note that `balboa_spa_circulationpump_consumption_hour` was not wrong).
+Since the sensor `balboa_spa_heater_running_time_hour` is also used by `balboa_spa_heater_consumption_hour`, `balboa_spa_circulation_pump_heater_consumption_hour`, `balboa_spa_heater_cost_hour` and `balboa_spa_circulationpump_heater_cost_hour` these are also wrong (note that `balboa_spa_circulationpump_consumption_hour` was not wrong).
 
 #### For Recorder database (MariaDB) i am using MySQL Workbench and excel to correct:
 
 Since the database structure has been changed a few version back (at writing, the version is 2022.11.2), we cannot reuse all from the error with SMA-data.
 
 We first need to isolate the right `metadata_id` for the sensors from table `statistics_short_term`:
-- Meta data id 173 = `balboa_spa_heater_running_time_hour`
-- Meta data id 151 = `balboa_spa_heater_consumption_hour`
-- Meta data id 163 = `balboa_spa_circulation_pump_heater_consumption_hour`
+- `metadata_id` 173 = `balboa_spa_heater_running_time_hour`
+- `metadata_id` 151 = `balboa_spa_heater_consumption_hour`
+- `metadata_id` 163 = `balboa_spa_circulation_pump_heater_consumption_hour`
+- `metadata_id` 152 = `balboa_spa_heater_cost_hour`
+- `metadata_id` 161 = `balboa_spa_circulationpump_heater_cost_hour`
 
-After that we can delete data from the statistics tables `statistics_short_term` and `statistics` with the `metadata_id` isolated above.
+After that we can delete data from the statistics tables `statistics_short_term` and `statistics` with the `metadata_id` isolated above, either by `id` or datetime-range.
 
 #### For the InfluxDB history database, the following was performed:
 
@@ -227,10 +229,12 @@ from(bucket: "ha")
    - And similar for the following entity_ids:
      - `balboa_spa_heater_running_time_hour`.
      - `balboa_spa_circulation_pump_heater_consumption_hour`.
+     - `balboa_spa_heater_cost_hour`.
+     - `balboa_spa_circulationpump_heater_cost_hour`.
 5. Go to the InfluxDB container on server1:
    - `sudo docker-compose exec ha-history-db bash`.
      - With shell in the container, delete the spefic _time (I did not manage to overwrite data with export/import-csv):
-       - Note that you need to be precise with the timestamp, as we do not use '--predicate', and would otherwise delete extensive amount of data.
+       - Note that you need to be precise with the timestamp, as we do not use '--predicate', and would otherwise (potentially) delete extensive amount of data.
          ```
          influx delete -b ha --start '2022-01-25T00:42:43.152029Z' --stop '2022-01-25T00:42:43.152029Z'
          ```
