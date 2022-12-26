@@ -234,7 +234,7 @@ from(bucket: "ha")
    - `sudo docker-compose exec ha-history-db bash`.
      - With shell in the container, delete the specific `entity_id` with start and stop according to first and latest according to export above.
        ```
-       influx delete -b ha --start '2022-12-08T02:00:47.029684Z' --stop '2022-12-15T08:00:02.017015Z' --predicate 'entity_id="balboa_spa_circulation_pump_heater_consumption_hour"'
+       influx delete -b ha --start '2022-12-08T02:00:47.029684Z' --stop '2022-12-15T08:00:02.017015Z' --predicate 'entity_id="balboa_spa_heater_consumption_hour"'
        ```
        - No error/output should occur.
     - Iterate through all above sensors and correct where necessary.
