@@ -12,6 +12,7 @@
   - [Exclude sensors for InfluxDB integration](https://github.com/slittorin/home-assistant-maintenance#exclude-sensors-for-influxdb-integration)
 - Errors, problems and challenges:
   - [Incorrect SMA Energy data](https://github.com/slittorin/home-assistant-maintenance#incorrect-sma-energy-data)
+  - [Incorrect SMA Energy data](https://github.com/slittorin/home-assistant-maintenance#incorrect-sma-energy-data)
 
 ## Regular maintenance
 
@@ -185,3 +186,54 @@ from(bucket: "ha")
          ```
          - No error/output should occur.
     - Iterate through all above sensors and correct where necessary.
+
+### Incorrect Balboa Spa data
+
+Sometime after 2022-12-08, after reboot of HA, due to upgrade, the sensor 'balboa_spa_heater_running_time_hour' went havoc.
+It appears that it started to register time the heater was on, even though the underlying sensor was not 'on'.
+
+After analysis it appears that the data was wrong between 2022-12-08 01:20 and 2022-12-15 08:05.
+
+Since the sensor `balboa_spa_heater_running_time_hour` is also used by `balboa_spa_heater_consumption_hour` and `balboa_spa_circulation_pump_heater_consumption_hour` these are also wrong (note that `balboa_spa_circulationpump_consumption_hour` was not wrong).
+
+#### For Recorder database (MariaDB) i am using MySQL Workbench and excel to correct:
+
+Since the database structure has been changed a few version back (at writing, the version is 2022.11.2), we cannot reuse all from the error with SMA-data.
+
+We first need to isolate the right `metadata_id` for the sensors from table `statistics_short_term`:
+- Meta data id 173 = `balboa_spa_heater_running_time_hour`
+- Meta data id 151 = `balboa_spa_heater_consumption_hour`
+- Meta data id 163 = `balboa_spa_circulation_pump_heater_consumption_hour`
+
+After that we can delete data from the statistics tables `statistics_short_term` and `statistics` with the `metadata_id` isolated above.
+
+#### For the InfluxDB history database, the following was performed:
+
+Since the data in the `states` table is wrong, we can assume that the data is also wrong in the InfluxDB database as states are pushed here.
+
+We cannot correct the data in InfluxDB directly through commands due to the design of the time-series database, instead we import corrected data so the data is overwritten.
+
+Be extra cautious with the delete command, preferably take a backup before updating.
+(I tried `--predicate 'entity_id="balboa_spa_circulation_pump_heater_consumption_hour"'` but it did not delete data. Bug?)
+
+1. Logon to InfluxDB databas and run the following in `Data Explorer` (Table view) for the above identified sensors and the valid time-ranges, according to:
+```
+from(bucket: "ha")
+  |> range(start: 2022-12-08T01:20:00Z, stop: 2022-12-15T08:05:00Z)
+  |> filter(fn: (r) => r["entity_id"] == "balboa_spa_heater_consumption_hour" and r["_field"] == "value")
+```
+2. Export each sensor to csv.
+3. In excel, isolate the timespan that is wrong.
+   - And similar for the following entity_ids:
+     - `balboa_spa_heater_running_time_hour`.
+     - `balboa_spa_circulation_pump_heater_consumption_hour`.
+5. Go to the InfluxDB container on server1:
+   - `sudo docker-compose exec ha-history-db bash`.
+     - With shell in the container, delete the spefic _time (I did not manage to overwrite data with export/import-csv):
+       - Note that you need to be precise with the timestamp, as we do not use '--predicate', and would otherwise delete extensive amount of data.
+         ```
+         influx delete -b ha --start '2022-01-25T00:42:43.152029Z' --stop '2022-01-25T00:42:43.152029Z'
+         ```
+         - No error/output should occur.
+    - Iterate through all above sensors and correct where necessary.
+    - Note that this will take time as each commit will take 3-5 seconds.
