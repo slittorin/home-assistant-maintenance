@@ -13,7 +13,7 @@
 - Errors, problems and challenges:
   - [Incorrect SMA Energy data](https://github.com/slittorin/home-assistant-maintenance#incorrect-sma-energy-data)
   - [Incorrect Balboa Spa data](https://github.com/slittorin/home-assistant-maintenance#incorrect-balboa-spa-data)
-  - [Failed SSD drive]()
+  - [Failed SSD drive](https://github.com/slittorin/home-assistant-maintenance/blob/main/README.md#failed-ssd-drive)
 
 ## Regular maintenance
 
@@ -446,6 +446,7 @@ If Selective self-test is pending on power-up, resume after 0 minute delay.
 
 I concluded that the SSD was so corrupted that it needed to be replaced.
 
+It therefore proceeded to purchase the same drive (if the new one fails, then I must revisit my design and setup), including a new SATA to USB-cable, to ensure that there are no hardware errors that can affect the new setup.
 
+Since I had the old SD-card, I could easily setup the new SSD according to my [instructions](https://github.com/slittorin/rpi-boot-ssd).
 
-There was bad-blocks note
