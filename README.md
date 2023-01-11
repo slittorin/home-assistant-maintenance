@@ -466,9 +466,26 @@ Note to self here to ensure that we have better copy of images and important con
 
 4. Since the SD-card was before the actual configuration of Server1, I needed to perform the [installation](https://github.com/slittorin/home-assistant-setup#setup-for-server-1) steps again (with a fresh upgrade before).
 
-5. Perform the setup [preparation](https://github.com/slittorin/home-assistant-setup#preparation) step.
+5. Perform the setup [Preparation and step 1](https://github.com/slittorin/home-assistant-setup#preparation).
 
-6. After that I copied the all the files and sub-dirs in directory `/srv/recovery/srv` to `/srv`, with (in dir /srv) `sudo cp -r restored/srv/* .`.
+6. After that I copied the all the files and sub-dirs in directory `/srv/recovery/srv` to `/srv`, with (in dir /srv) `sudo cp -r restored/srv/* .`.\
+   Here I verified that all the files had owner `xxx` and group `xxx`, and that shell-files could be run by user and group.
 
-7. 
+7. Setup [Preparation and step 2](https://github.com/slittorin/home-assistant-setup#preparation) was not needed to be performed since we already had the restored files.
+
+8. Perform the following activities for Setup [Preparation and step 3](https://github.com/slittorin/home-assistant-setup#preparation):
+   - At directory `/root`
+   - `ssh-copy-id pi@192.168.2.30`
+   - `chmod 700 /root/.ssh/*`
+   - `cd /config/.ssh`
+   - `cp /root/.ssh/* .`
+
+9. For [Setup of InfluxDB](https://github.com/slittorin/home-assistant-setup#installation-for-influxdb), perform the following:
+   - Since I had not updated my Influx instance, I knew that it was still on version 2.1.1, and we want to restore data to the same version.
+   - Step 1 through 3 is not needed since we have restored the files.
+   - For step 4: Update `/srv/docker-compose.yml` so that image and `influxdb:latest` is changed to `influxdb:2.1.1-alpine` (isolated after an internet search).
+
+----
+
+9. For Setup of [OS/HW statistics](https://github.com/slittorin/home-assistant-setup#oshw-statistics), perform step 3 and 4 to add to crontab.
    
