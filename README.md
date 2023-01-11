@@ -499,7 +499,7 @@ Note to self here to ensure that we have better copy of images and important con
        - These now resides in directory `/backup/restore/srv/ha-history-db/backup/backup.tmp`.
      - So we can issue the restore command with `influx restore /backup/restore/srv/ha-history-db/backup/backup.tmp --full`.
      - Error: failed to restore SQL snapshot: InfluxDB OSS-only command failed: 500 Internal Server Error: An internal error has occurred - check server logs
-     
+     - sudo journalctl -fu influxdb
 ----
 
 9. For Setup of [OS/HW statistics](https://github.com/slittorin/home-assistant-setup#oshw-statistics), perform step 3 and 4 to add to crontab.\
