@@ -465,3 +465,10 @@ Note to self here to ensure that we have better copy of images and important con
 3. After reboot of the RPI with the new SSD, I also ensured that the steps in [install](https://github.com/slittorin/raspberrypi-install) was performed.
 
 4. Since the SD-card was before the actual configuration of Server1, I needed to perform the [installation](https://github.com/slittorin/home-assistant-setup#setup-for-server-1) steps again (with a fresh upgrade before).
+
+5. Perform the setup [preparation](https://github.com/slittorin/home-assistant-setup#preparation) step.
+
+6. After that I copied the all the files and sub-dirs in directory `/srv/recovery/srv' to '/srv', with (in dir /srv) `sudo cp -r restored/srv/* .`.
+
+7. 
+   
