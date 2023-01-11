@@ -244,6 +244,8 @@ from(bucket: "ha")
 
 ### Failed SSD drive
 
+#### Error
+
 Between 4 and 5/1-2023 InfluxDB stopped and did not store any data.\
 I noticed this 8/1 and tried to logon to RPI with SSH without luck.\
 Interestingly, grafana-web was still working, and I could login to Influx also.
@@ -251,6 +253,8 @@ Interestingly, grafana-web was still working, and I could login to Influx also.
 For login to RPI, I could enter username and password, but the login stopped right after pressing Enter.\
 This occured both through SSH and in GUI.\
 After a while, errors occured on GUI that was similar to [this](https://forums.raspberrypi.com/viewtopic.php?t=336457).
+
+#### Analysis
 
 After mounting the SSD drive on an Ubuntu-machine, and later on the RPI booted from the initial SD-card, I could determine that there was several errors for the SSD.
 
@@ -446,14 +450,18 @@ If Selective self-test is pending on power-up, resume after 0 minute delay.
 ```
 
 I concluded that the SSD was so corrupted that it needed to be replaced.\
+
+#### Recovery
+
 Thereafter I proceeded to purchase the same drive (if the new one fails, then I must revisit my design and setup), including a new SATA to USB-cable, to ensure that there are no hardware errors that can affect the new setup.
 
 At this stage I was also able to copy the `/srv` and `/var/lib/docker` libraries to the Ubuntu-machine.\
 Note to self here to ensure that we have better copy of images and important configuration to another drive/share in the future, when drive fails (and yes, it will fail).
 
-Since I had the old SD-card, I could easily setup the new SSD according to my [instructions](https://github.com/slittorin/rpi-boot-ssd).
+1. Since I had the old SD-card, I could easily setup the new SSD according to my [instructions](https://github.com/slittorin/rpi-boot-ssd).
 
-Here I also attached the new SSD to my Ubuntu-machine and copied the saved `/srv` and `/var/lib/docker` to `/srv/restored`, so I could restore the files I needed.
+2. Here I also attached the new SSD to my Ubuntu-machine and copied the saved `/srv` and `/var/lib/docker` to `/srv/restored`, so I could restore the files I needed.
 
-After reboot of the RPI with the new SSD, I also ensured that the steps in [install](https://github.com/slittorin/raspberrypi-install) was performed.
+3. After reboot of the RPI with the new SSD, I also ensured that the steps in [install](https://github.com/slittorin/raspberrypi-install) was performed.
 
+4. Since the SD-card was before the actual configuration of Server1, I needed to perform the [installation](https://github.com/slittorin/home-assistant-setup#setup-for-server-1) steps again (with a fresh upgrade before).
