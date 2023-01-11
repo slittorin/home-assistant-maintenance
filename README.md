@@ -251,7 +251,7 @@ I could enter username and password, but I could not login.\
 This occured both through SSH and in GUI.\
 After a while, errors occured on GUI that was similar to [this](https://forums.raspberrypi.com/viewtopic.php?t=336457).
 
-After mounting the SSD drive on an Ubuntu machine, and later on the RPI booted from the initial SD-card, I could determine that there was errors.
+After mounting the SSD drive on an Ubuntu-machine, and later on the RPI booted from the initial SD-card, I could determine that there was several errors.
 
 This was esablished through `fsck` for the device, where however it only found a few errors to correct.\
 Noticable was also that the errors changed, and in many cases `fsck` did not state any errors.
@@ -444,9 +444,13 @@ Selective self-test flags (0x0):
 If Selective self-test is pending on power-up, resume after 0 minute delay.
 ```
 
-I concluded that the SSD was so corrupted that it needed to be replaced.
+I concluded that the SSD was so corrupted that it needed to be replaced.\
+Thereafter I proceeded to purchase the same drive (if the new one fails, then I must revisit my design and setup), including a new SATA to USB-cable, to ensure that there are no hardware errors that can affect the new setup.
 
-It therefore proceeded to purchase the same drive (if the new one fails, then I must revisit my design and setup), including a new SATA to USB-cable, to ensure that there are no hardware errors that can affect the new setup.
+At this stage I was also able to copy the `/srv` and `/var/lib/docker` libraries to the Ubuntu-machine.\
+Note to self here to ensure that we have better copy of images and important configuration to another drive/share in the future.
 
 Since I had the old SD-card, I could easily setup the new SSD according to my [instructions](https://github.com/slittorin/rpi-boot-ssd).
+
+Here I also attached the new SSD to my Ubuntu-machine and copied `/srv` and `/var/lib/docker` to `/srv/restored`, so I could restore the files I needed.
 
