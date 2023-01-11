@@ -13,6 +13,7 @@
 - Errors, problems and challenges:
   - [Incorrect SMA Energy data](https://github.com/slittorin/home-assistant-maintenance#incorrect-sma-energy-data)
   - [Incorrect Balboa Spa data](https://github.com/slittorin/home-assistant-maintenance#incorrect-balboa-spa-data)
+  - [Failed SSD drive]()
 
 ## Regular maintenance
 
@@ -240,3 +241,211 @@ from(bucket: "ha")
        ```
        - No error/output should occur.
     - Iterate through all above sensors and correct where necessary.
+
+### Failed SSD drive
+
+Between 4 and 5/1-2023 InfluxDB stopped and did not store any data.\
+I noticed this 8/1 and tried to logon to RPI without luck.
+
+I could enter username and password, but I could not login.\
+This occured both through SSH and in GUI.\
+After a while, errors occured on GUI that was similar to [this](https://forums.raspberrypi.com/viewtopic.php?t=336457).
+
+After mounting the SSD drive on an Ubuntu machine, and later on the RPI booted from the initial SD-card, I could determine that there was errors.
+
+This was esablished through `fsck` for the device, where however it only found a few errors to correct.\
+Noticable was also that the errors changed, and in many cases `fsck` did not state any errors.
+
+It was only when I utilized `sudo smartctl -d sat -a /dev/sdb` (on my Ubuntu-machine, smartctl is not installed on RPI) I could see the extent of the problem:
+```
+=== START OF INFORMATION SECTION ===
+Device Model:     Samsung SSD 870 EVO 500GB
+Serial Number:    S6PYNF0RB03411L
+LU WWN Device Id: 5 002538 f41b14378
+Firmware Version: SVT01B6Q
+User Capacity:    500 107 862 016 bytes [500 GB]
+Sector Size:      512 bytes logical/physical
+Rotation Rate:    Solid State Device
+Form Factor:      2.5 inches
+Device is:        Not in smartctl database [for details use: -P showall]
+ATA Version is:   ACS-4 T13/BSR INCITS 529 revision 5
+SATA Version is:  SATA 3.3, 6.0 Gb/s (current: 6.0 Gb/s)
+Local Time is:    Mon Jan  9 22:29:54 2023 CET
+SMART support is: Available - device has SMART capability.
+SMART support is: Enabled
+
+=== START OF READ SMART DATA SECTION ===
+SMART overall-health self-assessment test result: PASSED
+
+General SMART Values:
+Offline data collection status:  (0x00)	Offline data collection activity
+					was never started.
+					Auto Offline Data Collection: Disabled.
+Self-test execution status:      (   0)	The previous self-test routine completed
+					without error or no self-test has ever 
+					been run.
+Total time to complete Offline 
+data collection: 		(    0) seconds.
+Offline data collection
+capabilities: 			 (0x53) SMART execute Offline immediate.
+					Auto Offline data collection on/off support.
+					Suspend Offline collection upon new
+					command.
+					No Offline surface scan supported.
+					Self-test supported.
+					No Conveyance Self-test supported.
+					Selective Self-test supported.
+SMART capabilities:            (0x0003)	Saves SMART data before entering
+					power-saving mode.
+					Supports SMART auto save timer.
+Error logging capability:        (0x01)	Error logging supported.
+					General Purpose Logging supported.
+Short self-test routine 
+recommended polling time: 	 (   2) minutes.
+Extended self-test routine
+recommended polling time: 	 (  85) minutes.
+SCT capabilities: 	       (0x003d)	SCT Status supported.
+					SCT Error Recovery Control supported.
+					SCT Feature Control supported.
+					SCT Data Table supported.
+
+SMART Attributes Data Structure revision number: 1
+Vendor Specific SMART Attributes with Thresholds:
+ID# ATTRIBUTE_NAME          FLAG     VALUE WORST THRESH TYPE      UPDATED  WHEN_FAILED RAW_VALUE
+  5 Reallocated_Sector_Ct   0x0033   043   043   010    Pre-fail  Always       -       338
+  9 Power_On_Hours          0x0032   098   098   000    Old_age   Always       -       8830
+ 12 Power_Cycle_Count       0x0032   099   099   000    Old_age   Always       -       46
+177 Wear_Leveling_Count     0x0013   099   099   000    Pre-fail  Always       -       4
+179 Used_Rsvd_Blk_Cnt_Tot   0x0013   043   043   010    Pre-fail  Always       -       338
+181 Program_Fail_Cnt_Total  0x0032   100   100   010    Old_age   Always       -       0
+182 Erase_Fail_Count_Total  0x0032   100   100   010    Old_age   Always       -       0
+183 Runtime_Bad_Block       0x0013   043   043   010    Pre-fail  Always       -       338
+187 Reported_Uncorrect      0x0032   099   099   000    Old_age   Always       -       2638
+190 Airflow_Temperature_Cel 0x0032   068   053   000    Old_age   Always       -       32
+195 Hardware_ECC_Recovered  0x001a   199   199   000    Old_age   Always       -       2638
+199 UDMA_CRC_Error_Count    0x003e   100   100   000    Old_age   Always       -       0
+235 Unknown_Attribute       0x0012   099   099   000    Old_age   Always       -       44
+241 Total_LBAs_Written      0x0032   099   099   000    Old_age   Always       -       3168011128
+
+SMART Error Log Version: 1
+ATA Error Count: 2675 (device log contains only the most recent five errors)
+	CR = Command Register [HEX]
+	FR = Features Register [HEX]
+	SC = Sector Count Register [HEX]
+	SN = Sector Number Register [HEX]
+	CL = Cylinder Low Register [HEX]
+	CH = Cylinder High Register [HEX]
+	DH = Device/Head Register [HEX]
+	DC = Device Command Register [HEX]
+	ER = Error register [HEX]
+	ST = Status register [HEX]
+Powered_Up_Time is measured from power on, and printed as
+DDd+hh:mm:SS.sss where DD=days, hh=hours, mm=minutes,
+SS=sec, and sss=millisec. It "wraps" after 49.710 days.
+
+Error 2675 occurred at disk power-on lifetime: 8830 hours (367 days + 22 hours)
+  When the command that caused the error occurred, the device was active or idle.
+
+  After command completion occurred, registers were:
+  ER ST SC SN CL CH DH
+  -- -- -- -- -- -- --
+  40 51 68 b8 7b 72 40  Error: UNC at LBA = 0x00727bb8 = 7502776
+
+  Commands leading to the command that caused the error were:
+  CR FR SC SN CL CH DH DC   Powered_Up_Time  Command/Feature_Name
+  -- -- -- -- -- -- -- --  ----------------  --------------------
+  60 00 68 b8 7b 72 40 0d      00:00:29.611  READ FPDMA QUEUED
+  60 00 60 b8 77 72 40 0c      00:00:29.611  READ FPDMA QUEUED
+  60 00 58 b8 73 72 40 0b      00:00:29.611  READ FPDMA QUEUED
+  60 a8 50 10 72 72 40 0a      00:00:29.611  READ FPDMA QUEUED
+  60 00 48 10 6e 72 40 09      00:00:29.611  READ FPDMA QUEUED
+
+Error 2674 occurred at disk power-on lifetime: 8829 hours (367 days + 21 hours)
+  When the command that caused the error occurred, the device was active or idle.
+
+  After command completion occurred, registers were:
+  ER ST SC SN CL CH DH
+  -- -- -- -- -- -- --
+  40 51 00 60 f8 8c 40  Error: UNC at LBA = 0x008cf860 = 9238624
+
+  Commands leading to the command that caused the error were:
+  CR FR SC SN CL CH DH DC   Powered_Up_Time  Command/Feature_Name
+  -- -- -- -- -- -- -- --  ----------------  --------------------
+  60 08 00 60 f8 8c 40 00      02:22:14.584  READ FPDMA QUEUED
+  60 08 00 58 f8 8c 40 00      02:22:14.584  READ FPDMA QUEUED
+  60 08 00 50 f8 8c 40 00      02:22:14.584  READ FPDMA QUEUED
+  60 08 00 48 f8 8c 40 00      02:22:14.584  READ FPDMA QUEUED
+  60 08 00 40 f8 8c 40 00      02:22:14.584  READ FPDMA QUEUED
+
+Error 2673 occurred at disk power-on lifetime: 8829 hours (367 days + 21 hours)
+  When the command that caused the error occurred, the device was active or idle.
+
+  After command completion occurred, registers were:
+  ER ST SC SN CL CH DH
+  -- -- -- -- -- -- --
+  40 51 08 58 aa 8c 40  Error: 
+
+  Commands leading to the command that caused the error were:
+  CR FR SC SN CL CH DH DC   Powered_Up_Time  Command/Feature_Name
+  -- -- -- -- -- -- -- --  ----------------  --------------------
+  ef 03 46 50 aa 8c 40 00      02:22:14.129  SET FEATURES [Set transfer mode]
+  ef 03 0c 50 aa 8c 40 00      02:22:14.129  SET FEATURES [Set transfer mode]
+  ec 08 00 50 aa 8c 40 00      02:22:14.129  IDENTIFY DEVICE
+  60 08 00 50 aa 8c 40 00      02:22:14.129  READ FPDMA QUEUED
+  60 08 00 48 aa 8c 40 00      02:22:14.129  READ FPDMA QUEUED
+
+Error 2672 occurred at disk power-on lifetime: 8829 hours (367 days + 21 hours)
+  When the command that caused the error occurred, the device was active or idle.
+
+  After command completion occurred, registers were:
+  ER ST SC SN CL CH DH
+  -- -- -- -- -- -- --
+  40 51 00 50 aa 8c 40  Error: UNC at LBA = 0x008caa50 = 9218640
+
+  Commands leading to the command that caused the error were:
+  CR FR SC SN CL CH DH DC   Powered_Up_Time  Command/Feature_Name
+  -- -- -- -- -- -- -- --  ----------------  --------------------
+  60 08 00 50 aa 8c 40 00      02:22:14.035  READ FPDMA QUEUED
+  60 08 00 48 aa 8c 40 00      02:22:14.035  READ FPDMA QUEUED
+  60 08 00 40 aa 8c 40 00      02:22:14.035  READ FPDMA QUEUED
+  60 08 00 38 aa 8c 40 00      02:22:14.035  READ FPDMA QUEUED
+  60 08 00 30 aa 8c 40 00      02:22:14.035  READ FPDMA QUEUED
+
+Error 2671 occurred at disk power-on lifetime: 8829 hours (367 days + 21 hours)
+  When the command that caused the error occurred, the device was active or idle.
+
+  After command completion occurred, registers were:
+  ER ST SC SN CL CH DH
+  -- -- -- -- -- -- --
+  40 51 00 b0 65 68 40  Error: UNC at LBA = 0x006865b0 = 6841776
+
+  Commands leading to the command that caused the error were:
+  CR FR SC SN CL CH DH DC   Powered_Up_Time  Command/Feature_Name
+  -- -- -- -- -- -- -- --  ----------------  --------------------
+  60 08 00 b0 65 68 40 00      02:21:35.854  READ FPDMA QUEUED
+  60 08 00 a8 65 68 40 00      02:21:35.854  READ FPDMA QUEUED
+  60 08 00 a0 65 68 40 00      02:21:35.854  READ FPDMA QUEUED
+  60 08 00 98 65 68 40 00      02:21:35.854  READ FPDMA QUEUED
+  60 08 00 90 65 68 40 00      02:21:35.854  READ FPDMA QUEUED
+
+SMART Self-test log structure revision number 1
+No self-tests have been logged.  [To run self-tests, use: smartctl -t]
+
+SMART Selective self-test log data structure revision number 1
+ SPAN  MIN_LBA  MAX_LBA  CURRENT_TEST_STATUS
+    1        0        0  Not_testing
+    2        0        0  Not_testing
+    3        0        0  Not_testing
+    4        0        0  Not_testing
+    5        0        0  Not_testing
+  256        0    65535  Read_scanning was never started
+Selective self-test flags (0x0):
+  After scanning selected spans, do NOT read-scan remainder of disk.
+If Selective self-test is pending on power-up, resume after 0 minute delay.
+```
+
+I concluded that the SSD was so corrupted that it needed to be replaced.
+
+
+
+There was bad-blocks note
