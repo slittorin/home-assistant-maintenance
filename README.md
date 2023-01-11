@@ -480,12 +480,17 @@ Note to self here to ensure that we have better copy of images and important con
    - `cd /config/.ssh`
    - `cp /root/.ssh/* .`
 
+9. At this stage, comment out rows related to Grafana in `/srv/docker-compose.yml`.
+
 9. For [Setup of InfluxDB](https://github.com/slittorin/home-assistant-setup#installation-for-influxdb), perform the following:
    - Since I had not updated my Influx instance, I knew that it was still on version 2.1.1, and we want to restore data to the same version.
    - Step 1 through 3 is not needed since we have restored the files.
    - For step 4: Update `/srv/docker-compose.yml` so that image and `influxdb:latest` is changed to `influxdb:2.1.1-alpine` (isolated after an internet search).
-
+   - Step 5 is not needed since we have restored the files.
+   - Run the activities in step 6.
+     - Once docker for Influx is running, shut it down with `sudo docker-compose stop`.
 ----
 
-9. For Setup of [OS/HW statistics](https://github.com/slittorin/home-assistant-setup#oshw-statistics), perform step 3 and 4 to add to crontab.
+9. For Setup of [OS/HW statistics](https://github.com/slittorin/home-assistant-setup#oshw-statistics), perform step 3 and 4 to add to crontab.\
+  Once docker for Influx
    
