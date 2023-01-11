@@ -452,7 +452,7 @@ Note to self here to ensure that we have better copy of images and important con
 
 Since I had the old SD-card, I could easily setup the new SSD according to my [instructions](https://github.com/slittorin/rpi-boot-ssd).
 
-Here I also attached the new SSD to my Ubuntu-machine and copied `/srv` and `/var/lib/docker` to `/srv/restored`, so I could restore the files I needed.
+Here I also attached the new SSD to my Ubuntu-machine and copied the saved `/srv` and `/var/lib/docker` to `/srv/restored`, so I could restore the files I needed.
 
 After reboot of the RPI with the new SSD, I also ensured that the steps in [install](https://github.com/slittorin/raspberrypi-install) was performed.
 
