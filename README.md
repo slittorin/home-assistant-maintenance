@@ -448,9 +448,11 @@ I concluded that the SSD was so corrupted that it needed to be replaced.\
 Thereafter I proceeded to purchase the same drive (if the new one fails, then I must revisit my design and setup), including a new SATA to USB-cable, to ensure that there are no hardware errors that can affect the new setup.
 
 At this stage I was also able to copy the `/srv` and `/var/lib/docker` libraries to the Ubuntu-machine.\
-Note to self here to ensure that we have better copy of images and important configuration to another drive/share in the future.
+Note to self here to ensure that we have better copy of images and important configuration to another drive/share in the future, when drive fails (and yes, it will fail).
 
 Since I had the old SD-card, I could easily setup the new SSD according to my [instructions](https://github.com/slittorin/rpi-boot-ssd).
 
 Here I also attached the new SSD to my Ubuntu-machine and copied `/srv` and `/var/lib/docker` to `/srv/restored`, so I could restore the files I needed.
+
+After reboot of the RPI with the new SSD, I also ensured that the steps in [install](https://github.com/slittorin/raspberrypi-install) was performed.
 
