@@ -468,7 +468,7 @@ Note to self here to ensure that we have better copy of images and important con
 
 5. Perform the setup [preparation](https://github.com/slittorin/home-assistant-setup#preparation) step.
 
-6. After that I copied the all the files and sub-dirs in directory `/srv/recovery/srv' to '/srv', with (in dir /srv) 'sudo cp -r restored/srv/* . '.
+6. After that I copied the all the files and sub-dirs in directory `/srv/recovery/srv` to `/srv`, with (in dir /srv) `sudo cp -r restored/srv/* .`.
 
 7. 
    
