@@ -500,7 +500,11 @@ Note to self here to ensure that we have better copy of images and important con
      
      - Copy the `HA_HISTORY_DB_ROOT_TOKEN` from `/srv/.env`.
      - Initiate setup with the following `influx setup --token THECOPIEDROOTTOKEN`.
-     https://stackoverflow.com/questions/44226705/how-can-i-restore-a-database-to-a-influxdb-container
+     
+     - https://www.google.com/search?q=influx+docker-compose+container+restore+data+to+an+existing+database&ei=1yO_Y5ekJaH4qwHhnrfQCQ&ved=0ahUKEwjX66KFtcD8AhUh_CoKHWHPDZoQ4dUDCA8&uact=5&oq=influx+docker-compose+container+restore+data+to+an+existing+database&gs_lcp=Cgxnd3Mtd2l6LXNlcnAQAzoKCAAQRxDWBBCwAzoFCAAQogQ6BAghEApKBAhBGABKBAhGGABQgwVYnyJgkyRoA3ABeACAAUuIAdUFkgECMTKYAQCgAQHIAQjAAQE&sclient=gws-wiz-serp
+     - https://stackoverflow.com/questions/44226705/how-can-i-restore-a-database-to-a-influxdb-container
+     ----> https://www.grzegorowski.com/how-to-backup-and-restore-influxdb-which-runs-inside-docker-container
+     - https://www.influxdata.com/blog/backuprestore-of-influxdb-fromto-docker-containers/
      
      - So we can issue the restore command with `influx restore /backup/restore/srv/ha-history-db/backup/backup.tmp --full`.
      - Error: failed to restore SQL snapshot: InfluxDB OSS-only command failed: 500 Internal Server Error: An internal error has occurred - check server logs
