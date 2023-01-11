@@ -245,16 +245,17 @@ from(bucket: "ha")
 ### Failed SSD drive
 
 Between 4 and 5/1-2023 InfluxDB stopped and did not store any data.\
-I noticed this 8/1 and tried to logon to RPI without luck.
+I noticed this 8/1 and tried to logon to RPI with SSH without luck.\
+Interestingly, grafana-web was still working, and I could login to Influx also.
 
-I could enter username and password, but I could not login.\
+For login to RPI, I could enter username and password, but the login stopped right after pressing Enter.\
 This occured both through SSH and in GUI.\
 After a while, errors occured on GUI that was similar to [this](https://forums.raspberrypi.com/viewtopic.php?t=336457).
 
-After mounting the SSD drive on an Ubuntu-machine, and later on the RPI booted from the initial SD-card, I could determine that there was several errors.
+After mounting the SSD drive on an Ubuntu-machine, and later on the RPI booted from the initial SD-card, I could determine that there was several errors for the SSD.
 
-This was esablished through `fsck` for the device, where however it only found a few errors to correct.\
-Noticable was also that the errors changed, and in many cases `fsck` did not state any errors.
+This was established through `fsck` for the device, where however it only found a few errors to correct.\
+Noticable was also that the errors changed between running the command, and in many cases `fsck` did not state any errors.
 
 It was only when I utilized `sudo smartctl -d sat -a /dev/sdb` (on my Ubuntu-machine, smartctl is not installed on RPI) I could see the extent of the problem:
 ```
