@@ -488,7 +488,18 @@ Note to self here to ensure that we have better copy of images and important con
    - For step 4: Update `/srv/docker-compose.yml` so that image and `influxdb:latest` is changed to `influxdb:2.1.1-alpine` (isolated after an internet search).
    - Step 5 is not needed since we have restored the files.
    - Run the activities in step 6.
-     - Once docker for Influx is running, shut it down with `sudo docker-compose stop`.
+   - Now we have a container running for Influx, with the right version, and will need to restore database:
+     - Isolate the latest tar-file for backup in `/srv/ha-history-db/backup`.
+       - In this case it was: influxdb-backup-daily-20230103_000101.tar.
+       - I could not trust the files in `/srv/ha-history-db/backup/backup.tmp` as these was created after the SSD-errors occured.
+     - Create directory `/srv/ha-history-db/backup/restore`.
+     - Extract the tar-file with `sudo tar xvf influxdb-backup-daily-20230103_000101.tar -C ./restore` (in backup directory).
+     - Go into the container with `sudo docker-compose exec ha-history-db bash`.
+     - We have the backup directory on the host mounted, and we have extracted all files.
+       - These now resides in directory `/backup/restore/srv/ha-history-db/backup/backup.tmp`.
+     - So we can issue the restore command with `influx restore /backup/restore/srv/ha-history-db/backup/backup.tmp --full`.
+     - Error: failed to restore SQL snapshot: InfluxDB OSS-only command failed: 500 Internal Server Error: An internal error has occurred - check server logs
+     
 ----
 
 9. For Setup of [OS/HW statistics](https://github.com/slittorin/home-assistant-setup#oshw-statistics), perform step 3 and 4 to add to crontab.\
