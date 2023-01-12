@@ -535,8 +535,8 @@ Note to self here to ensure that we have better copy of images and important con
       FROM ha-grafana
 RUN chown grafana /var/lib/grafana/grafana.db
 RUN chgrp ugo+rw /var/lib/grafana/grafana.db
-      - Ensure that the permissions and ownership is correct with `sudo docker-compose exec ha-history-db bash` and the following:
-        - sudo docker-compose exec ha-history-db "chown grafana /var/lib/grafana/grafana.db"
+      - Ensure that the permissions and ownership is correct with `sudo docker-compose exec ha-grafana bash` and the following:
+        - sudo docker-compose exec ha-grafana "chown grafana /var/lib/grafana/grafana.db"
         - `cd /var/lib/grafana`
 	- 'chown grafana grafana.db`
 	- 'chmod ug+rw grafana.db`
