@@ -535,13 +535,34 @@ Note to self here to ensure that we have better copy of images and important con
       - Start the container again with `sudo docker-compose up -d`
       - Ensure that the permissions and ownership is correct with `docker exec -it --user root ha-grafana bash` and the following:
         - `cd /var/lib/grafana`
-	- 'chown grafana grafana.db`
-	- 'chmod ug+rw grafana.db`
+	- `chown grafana grafana.db`
+	- `chmod ug+rw grafana.db`
       - Stop the container again with `sudo docker-compose stop ha-grafana`, then start again with `sudo docker-compose up -d`.
     -  Update token in step 7 in Grafana.
     - Login to Grafana with `http://192.168.2.30:3000/` and ensure that all dashboards are there.
       - Since I had to restore a backup that did not contain all data, I needed also to restore JSON [manually](https://community.grafana.com/t/how-to-import-a-panel-using-its-json-data/29715).
 
-9. For Setup of [OS/HW statistics](https://github.com/slittorin/home-assistant-setup#oshw-statistics), perform step 3 and 4 to add to crontab.\
-  Once docker for Influx
-   
+13. For [Backup of Grafana](https://github.com/slittorin/home-assistant-setup#backup-for-grafana-database):
+    - Perform step 2 and 3.
+
+14. For [Setup of Home Assistant](https://github.com/slittorin/home-assistant-setup#setup-for-home-assistant):
+    - Perform the steps for [History DB setup](https://github.com/slittorin/home-assistant-setup#history-db-setup).
+
+15. For Setup of [OS/HW statistics](https://github.com/slittorin/home-assistant-setup#oshw-statistics):
+    - Perform step 3 and 4 to add to crontab.
+ 
+16. Let the whole instance run for a hours and check
+    - That data is coming into InfluxDB, through Grafana and appropriate dashboard for the day.
+    - Check HA error logs.
+
+17. Let the whole instance run for a few days and check:
+    - On Server1:
+      - That backup scripts is running correctly.
+      - That os-stats script is running correctly.
+    - On HA:
+      - That Git-triggers from HA for Grafana works correctly.
+      - That `/config/scripts/copy_backup.sh` is running correctly
+      - That `/config/scripts/remote_docker_volume_size.sh.` is running correctly
+      - That `/config/scripts/remote_stats.sh.` is running correctly
+
+Well thats all folks. Never forget to thorougly test restore of your data and configuration.
