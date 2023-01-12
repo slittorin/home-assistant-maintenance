@@ -496,13 +496,16 @@ Note to self here to ensure that we have better copy of images and important con
        - I logged into Influx `http://192.168.2.30:8086/` and proceeded to `Data` -> `Buckets` -> `ha`, and changed the name of the bucket to `ha1`.
          - There after I would be able to perform a normal restore (not full).
      - Isolate the latest tar-file for backup in `/srv/ha-history-db/backup`.
-       - In this case it was: influxdb-backup-daily-20230103_000101.tar.
+       - In this case it was: `influxdb-backup-daily-20230103_000101.tar`.
        - I could not trust the files in `/srv/ha-history-db/backup/backup.tmp` as these was created after the SSD-errors occured.
      - Create directory `/srv/ha-history-db/backup/restore`.
      - Extract the tar-file with `sudo tar xvf influxdb-backup-daily-20230103_000101.tar -C ./restore` (in backup directory).
      - Go into the container with `sudo docker-compose exec ha-history-db bash`.
-     - We have the backup directory on the host mounted, and we have extracted all files.
-       - These now resides in directory `/backup/restore/srv/ha-history-db/backup/backup.tmp` on the container.
+       - We have the backup directory on the host mounted, and we have extracted all files.
+         - These now resides in directory `/backup/restore/srv/ha-history-db/backup/backup.tmp` on the container.
+       - Run the following command `influx restore -b ha /backup/restore/srv/ha-history-db/backup/backup.tmp`.
+         - I XXX
+         - docker logs ha-history-db
      
      - Copy the `HA_HISTORY_DB_ROOT_TOKEN` from `/srv/.env`.
      - Initiate setup with the following `influx setup --token THECOPIEDROOTTOKEN`.
