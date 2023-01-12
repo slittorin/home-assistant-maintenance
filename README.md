@@ -540,7 +540,7 @@ Note to self here to ensure that we have better copy of images and important con
       - Stop the container again with `sudo docker-compose stop ha-grafana`, then start again with `sudo docker-compose up -d`.
     -  Update token in step 7 in Grafana.
     - Login to Grafana with `http://192.168.2.30:3000/` and ensure that all dashboards are there.
-      - Since I had to restore a backup that did not contain all data, I needed also to restore JSON [manually](https://community.grafana.com/t/how-to-import-a-panel-using-its-json-data/29715).
+      - Since I had to restore a backup that did not contain all changes made, I needed also to restore JSON [manually](https://community.grafana.com/t/how-to-import-a-panel-using-its-json-data/29715).
 
 13. For [Backup of Grafana](https://github.com/slittorin/home-assistant-setup#backup-for-grafana-database):
     - Perform step 2 and 3.
@@ -562,7 +562,7 @@ Note to self here to ensure that we have better copy of images and important con
     - On HA:
       - That Git-triggers from HA for Grafana works correctly.
       - That `/config/scripts/copy_backup.sh` is running correctly
-      - That `/config/scripts/remote_docker_volume_size.sh.` is running correctly
-      - That `/config/scripts/remote_stats.sh.` is running correctly
+      - That `/config/scripts/remote_docker_volume_size.sh` is running correctly
+      - That `/config/scripts/remote_stats.sh` is running correctly
 
 Well thats all folks. Never forget to thorougly test restore of your data and configuration.
