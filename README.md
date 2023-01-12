@@ -491,7 +491,7 @@ Note to self here to ensure that we have better copy of images and important con
    - Now we have a container running for Influx, with the right version, and will need to restore database:
      - Since we got a new fresh instance, we also got the bucket HA, that we cannot restore directly to.
        - I tried here to perform `influx restore DIRTOBACKUPDIRECTORY --full` but got error `Error: failed to restore SQL snapshot: InfluxDB OSS-only command failed: 500 Internal Server Error: An internal error has occurred - check server logs`.
-         - We also have the following [instruction](https://www.grzegorowski.com/how-to-backup-and-restore-influxdb-which-runs-inside-docker-container) on how to restore from an intermediate container, as I could not isolate the meta and data directories in `/var/lib/influxdb`.
+         - We also have the following [instruction](https://www.grzegorowski.com/how-to-backup-and-restore-influxdb-which-runs-inside-docker-container) on how to restore from an intermediate container, however, as I could not isolate the meta and data directories in `/var/lib/influxdb` I did not try this approach.
        - Therefore I took another approach.
        - I logged into Influx `http://192.168.2.30:8086/` and proceeded to `Data` -> `Buckets` -> `ha`, and changed the name of the bucket to `ha1`.
          - There after I would be able to perform a normal restore (not full).
