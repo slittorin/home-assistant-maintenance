@@ -485,27 +485,35 @@ Note to self here to ensure that we have better copy of images and important con
 9. For [Setup of InfluxDB](https://github.com/slittorin/home-assistant-setup#installation-for-influxdb), perform the following:
    - Since I had not updated my Influx instance, I knew that it was still on version 2.1.1, and we want to restore data to the same version.
    - Step 1 through 3 is not needed since we have restored the files.
-   - For step 4: Update `/srv/docker-compose.yml` so that image and `influxdb:latest` is changed to `influxdb:2.1.1-alpine` (isolated after an internet search).
+   - For step 4: Update `/srv/docker-compose.yml` so that image and `influxdb:latest` is changed to `influxdb:2.2.0-alpine` (note that it is not `influxdb:2.1.1-alpine`, due to the bug I isolated below).
    - Step 5 is not needed since we have restored the files.
    - Run the activities in step 6.
    - Now we have a container running for Influx, with the right version, and will need to restore database:
      - Since we got a new fresh instance, we also got the bucket HA, that we cannot restore directly to.
        - I tried here to perform `influx restore DIRTOBACKUPDIRECTORY --full` but got error `Error: failed to restore SQL snapshot: InfluxDB OSS-only command failed: 500 Internal Server Error: An internal error has occurred - check server logs`.
-         - We also have the following [instruction](https://www.grzegorowski.com/how-to-backup-and-restore-influxdb-which-runs-inside-docker-container) on how to restore from an intermediate container, however, as I could not isolate the meta and data directories in `/var/lib/influxdb` I did not try this approach.
-       - Therefore I took another approach.
-       - I logged into Influx `http://192.168.2.30:8086/` and proceeded to `Data` -> `Buckets` -> `ha`, and changed the name of the bucket to `ha1`.
-         - There after I would be able to perform a normal restore (not full).
+         - Through `docker logs ha-history-db` I got more insight into the error `Error while freeing cold shard resources`, and that it was related to a race condition [bug](https://github.com/influxdata/influxdb/commit/39eeb3e), so I changed from 2.1.1-alpine to 2.2.0-alpine above, as the bug is fixed in this version.
+     - I logged into Influx `http://192.168.2.30:8086/` and proceeded to `Data` -> `Buckets` -> `ha`, and changed the name of the bucket to `ha1`.
+       - Thereafter I would be able to perform a normal restore (not full).
      - Isolate the latest tar-file for backup in `/srv/ha-history-db/backup`.
        - In this case it was: `influxdb-backup-daily-20230103_000101.tar`.
-       - I could not trust the files in `/srv/ha-history-db/backup/backup.tmp` as these was created after the SSD-errors occured.
+         - I could not trust the files in `/srv/ha-history-db/backup/backup.tmp` as these was created after the SSD-errors occured.
      - Create directory `/srv/ha-history-db/backup/restore`.
      - Extract the tar-file with `sudo tar xvf influxdb-backup-daily-20230103_000101.tar -C ./restore` (in backup directory).
      - Go into the container with `sudo docker-compose exec ha-history-db bash`.
        - We have the backup directory on the host mounted, and we have extracted all files.
          - These now resides in directory `/backup/restore/srv/ha-history-db/backup/backup.tmp` on the container.
        - Run the following command `influx restore -b ha /backup/restore/srv/ha-history-db/backup/backup.tmp`.
-         - I XXX
-         - docker logs ha-history-db
+         - The output should be like the following:
+	 ```
+	 2023/01/12 17:25:00 INFO: Restoring bucket "2fea3c080297848f" as "ha"
+         2023/01/12 17:25:01 INFO: Restoring TSM snapshot for shard 1
+         2023/01/12 17:25:03 INFO: Restoring TSM snapshot for shard 2
+         .
+	 .
+	 .
+	 2023/01/12 17:25:49 INFO: Restoring TSM snapshot for shard 51
+	 ```
+	 With no error at the end.
 
 https://github.com/influxdata/influxdb/issues/15323
 https://github.com/influxdata/influxdb/issues/22646
