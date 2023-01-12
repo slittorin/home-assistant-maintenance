@@ -482,40 +482,59 @@ Note to self here to ensure that we have better copy of images and important con
 
 9. At this stage, comment out rows related to Grafana in `/srv/docker-compose.yml`.
 
-9. For [Setup of InfluxDB](https://github.com/slittorin/home-assistant-setup#installation-for-influxdb), perform the following:
-   - Since I had not updated my Influx instance, I knew that it was still on version 2.1.1, and we want to restore data to the same version.
-   - Step 1 through 3 is not needed since we have restored the files.
-   - For step 4: Update `/srv/docker-compose.yml` so that image and `influxdb:latest` is changed to `influxdb:2.2.0-alpine` (note that it is not `influxdb:2.1.1-alpine`, due to the bug I isolated below).
-   - Step 5 is not needed since we have restored the files.
-   - Perform the activities in step 6.
-   - Now we have a container running for Influx, with the right version, and will need to restore database:
-     - Since we got a new fresh instance, we also got the bucket HA, that we cannot restore directly to.
-       - I tried here to perform `influx restore DIRTOBACKUPDIRECTORY --full` but got error `Error: failed to restore SQL snapshot: InfluxDB OSS-only command failed: 500 Internal Server Error: An internal error has occurred - check server logs`.
-         - Through `docker logs ha-history-db` I got more insight into the error `Error while freeing cold shard resources`, and that it was related to a race condition [bug](https://github.com/influxdata/influxdb/commit/39eeb3e), so I changed from 2.1.1-alpine to 2.2.0-alpine above, as the bug is fixed in this version.
-     - I logged into Influx `http://192.168.2.30:8086/` and proceeded to `Data` -> `Buckets` -> `ha`, and changed the name of the bucket to `ha1`.
-       - Thereafter I would be able to perform a normal restore (not full).
-     - Isolate the latest tar-file for backup in `/srv/ha-history-db/backup`.
-       - In this case it was: `influxdb-backup-daily-20230103_000101.tar`.
-         - I could not trust the files in `/srv/ha-history-db/backup/backup.tmp` as these was created after the SSD-errors occured.
-     - Create directory `/srv/ha-history-db/backup/restore`.
-     - Extract the tar-file with `sudo tar xvf influxdb-backup-daily-20230103_000101.tar -C ./restore` (in backup directory).
-     - Go into the container with `sudo docker-compose exec ha-history-db bash`.
-       - We have the backup directory on the host mounted, and we have extracted all files.
-         - These now resides in directory `/backup/restore/srv/ha-history-db/backup/backup.tmp` on the container.
-       - Run the following command `influx restore -b ha /backup/restore/srv/ha-history-db/backup/backup.tmp`.
-         - The output should be like the following:\
-           `2023/01/12 17:25:00 INFO: Restoring bucket "2fea3c080297848f" as "ha"`\
-           `2023/01/12 17:25:01 INFO: Restoring TSM snapshot for shard 1`\
-	   up to\
-           `2023/01/12 17:25:49 INFO: Restoring TSM snapshot for shard 51`\
-	   With no error at the end.
-     - We now have a database restored.
-   - Perform the activities in step 7.
+10. For [Setup of InfluxDB](https://github.com/slittorin/home-assistant-setup#installation-for-influxdb), perform the following:
+    - Since I had not updated my Influx instance, I knew that it was still on version 2.1.1, and we want to restore data to the same version.
+    - Step 1 through 3 is not needed since we have restored the files.
+    - For step 4: Update `/srv/docker-compose.yml` so that image and `influxdb:latest` is changed to `influxdb:2.2.0-alpine` (note that it is not `influxdb:2.1.1-alpine`, due to the bug I isolated below).
+    - Step 5 is not needed since we have restored the files.
+    - Perform the activities in step 6.
+    - Now we have a container running for Influx, with the right version, and will need to restore database:
+      - Since we got a new fresh instance, we also got the bucket HA, that we cannot restore directly to.
+        - I tried here to perform `influx restore DIRTOBACKUPDIRECTORY --full` but got error `Error: failed to restore SQL snapshot: InfluxDB OSS-only command failed: 500 Internal Server Error: An internal error has occurred - check server logs`.
+          - Through `docker logs ha-history-db` I got more insight into the error `Error while freeing cold shard resources`, and that it was related to a race condition [bug](https://github.com/influxdata/influxdb/commit/39eeb3e), so I changed from 2.1.1-alpine to 2.2.0-alpine above, as the bug is fixed in this version.
+      - I logged into Influx `http://192.168.2.30:8086/` and proceeded to `Data` -> `Buckets` -> `ha`, and changed the name of the bucket to `ha1`.
+        - Thereafter I would be able to perform a normal restore (not full).
+      - Isolate the latest tar-file for backup in `/srv/ha-history-db/backup`.
+        - In this case it was: `influxdb-backup-daily-20230103_000101.tar`.
+          - I could not trust the files in `/srv/ha-history-db/backup/backup.tmp` as these was created after the SSD-errors occured.
+      - Create directory `/srv/ha-history-db/backup/restore`.
+      - Extract the tar-file with `sudo tar xvf influxdb-backup-daily-20230103_000101.tar -C ./restore` (in backup directory).
+      - Go into the container with `sudo docker-compose exec ha-history-db bash`.
+        - We have the backup directory on the host mounted, and we have extracted all files.
+          - These now resides in directory `/backup/restore/srv/ha-history-db/backup/backup.tmp` on the container.
+        - Run the following command `influx restore -b ha /backup/restore/srv/ha-history-db/backup/backup.tmp`.
+          - The output should be like the following:\
+            `2023/01/12 17:25:00 INFO: Restoring bucket "2fea3c080297848f" as "ha"`\
+            `2023/01/12 17:25:01 INFO: Restoring TSM snapshot for shard 1`\
+	    up to\
+            `2023/01/12 17:25:49 INFO: Restoring TSM snapshot for shard 51`\
+	    With no error at the end.
+      - We now have a database restored.
+    - Perform the activities in step 7.
+    - Log into Influx `http://192.168.2.30:8086/` and proceeded to `Data` -> `Buckets` -> `ha`, and remove the bucket `ha1` (renamed above).
 
 10. For [Backup of InfluxDB](https://github.com/slittorin/home-assistant-setup#backup-for-influxdb):
     - Perform step 1 and 2.
- 
-11. For [Installation of Grafana](https://github.com/slittorin/home-assistant-setup#installation-for-grafana):
+
+11. Remove the commments added in step 9, related to Grafana in `/srv/docker-compose.yml`.
+
+12. For [Installation of Grafana](https://github.com/slittorin/home-assistant-setup#installation-for-grafana):
+    - Since I had not updated my Grafana instance, I knew that it was still on version 8.3.3, and we want to restore data to the same version.
+    - Step 1 through 3 is not needed since we have restored the files.
+    - For step 4: Update `/srv/docker-compose.yml` so that image and `grafana:latest` is changed to `grafana:8.3.3`.
+    - Step 5 is not needed since we have restored the files.
+    - Perform the activities in step 6.
+    - Now we have a container running for Grafana, with the right version, and will need to restore database:
+      - Isolate the latest tar-file for backup in `/srv/ha-grafana/backup`.
+        - In this case it was: `grafana-backup-daily-20230103_000201.tar`.
+          - I could not trust the files in `/srv/ha-grafana/backup/backup.tmp` as these was created after the SSD-errors occured, and the 4/4 file was empty.
+      - Create directory `/srv/ha-grafana/backup/restore`.
+      - Extract the tar-file with `sudo tar xvf grafana-backup-daily-20230103_000201.tar -C ./restore` (in backup directory).
+      - We stop the container to allow us to copy file without a running Grafana with `sudo docker-compose stop ha-grafana`.
+      - Copy the database file to the container image with `sudo docker cp /srv/ha-grafana/backup/restore/srv/ha-grafana/backup/backup.tmp/grafana.db ha-grafana:/var/lib/grafana/`
+      - Start the container again with `sudo docker-compose up -d`
+    -  Update token in step 7 in Grafana.
+    - Login to Grafana with `http://192.168.2.30:3000/` and ensure that all dashboards are there.
 
 9. For Setup of [OS/HW statistics](https://github.com/slittorin/home-assistant-setup#oshw-statistics), perform step 3 and 4 to add to crontab.\
   Once docker for Influx
