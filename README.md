@@ -489,6 +489,12 @@ Note to self here to ensure that we have better copy of images and important con
    - Step 5 is not needed since we have restored the files.
    - Run the activities in step 6.
    - Now we have a container running for Influx, with the right version, and will need to restore database:
+     - Since we got a new fresh instance, we also got the bucket HA, that we cannot restore directly to.
+       - I tried here to perform `influx restore DIRTOBACKUPDIRECTORY --full` but got error `Error: failed to restore SQL snapshot: InfluxDB OSS-only command failed: 500 Internal Server Error: An internal error has occurred - check server logs`.
+         - We also have the following [instruction](https://www.grzegorowski.com/how-to-backup-and-restore-influxdb-which-runs-inside-docker-container) on how to restore from an intermediate container, as I could not isolate the meta and data directories in `/var/lib/influxdb`.
+       - Therefore I took another approach.
+       - I logged into Influx `http://192.168.2.30:8086/` and proceeded to `Data` -> `Buckets` -> `ha`, and changed the name of the bucket to `ha1`.
+         - There after I would be able to perform a normal restore (not full).
      - Isolate the latest tar-file for backup in `/srv/ha-history-db/backup`.
        - In this case it was: influxdb-backup-daily-20230103_000101.tar.
        - I could not trust the files in `/srv/ha-history-db/backup/backup.tmp` as these was created after the SSD-errors occured.
@@ -496,7 +502,7 @@ Note to self here to ensure that we have better copy of images and important con
      - Extract the tar-file with `sudo tar xvf influxdb-backup-daily-20230103_000101.tar -C ./restore` (in backup directory).
      - Go into the container with `sudo docker-compose exec ha-history-db bash`.
      - We have the backup directory on the host mounted, and we have extracted all files.
-       - These now resides in directory `/backup/restore/srv/ha-history-db/backup/backup.tmp`.
+       - These now resides in directory `/backup/restore/srv/ha-history-db/backup/backup.tmp` on the container.
      
      - Copy the `HA_HISTORY_DB_ROOT_TOKEN` from `/srv/.env`.
      - Initiate setup with the following `influx setup --token THECOPIEDROOTTOKEN`.
