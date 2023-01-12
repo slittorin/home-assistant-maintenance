@@ -532,17 +532,15 @@ Note to self here to ensure that we have better copy of images and important con
       - Extract the tar-file with `sudo tar xvf grafana-backup-daily-20230103_000201.tar -C ./restore` (in backup directory).
       - We stop the container to allow us to copy file without a running Grafana with `sudo docker-compose stop ha-grafana`.
       - Copy the database file to the container image with `sudo docker cp /srv/ha-grafana/backup/restore/srv/ha-grafana/backup/backup.tmp/grafana.db ha-grafana:/var/lib/grafana/`
-      FROM ha-grafana
-RUN chown grafana /var/lib/grafana/grafana.db
-RUN chgrp ugo+rw /var/lib/grafana/grafana.db
-      - Ensure that the permissions and ownership is correct with `sudo docker-compose exec ha-grafana bash` and the following:
-        - sudo docker-compose exec ha-grafana "chown grafana /var/lib/grafana/grafana.db"
+      - Start the container again with `sudo docker-compose up -d`
+      - Ensure that the permissions and ownership is correct with `docker exec -it --user root ha-grafana bash` and the following:
         - `cd /var/lib/grafana`
 	- 'chown grafana grafana.db`
 	- 'chmod ug+rw grafana.db`
-      - Start the container again with `sudo docker-compose up -d`
+      - Stop the container again with `sudo docker-compose stop ha-grafana`, then start again with `sudo docker-compose up -d`.
     -  Update token in step 7 in Grafana.
     - Login to Grafana with `http://192.168.2.30:3000/` and ensure that all dashboards are there.
+      - Since I had to restore a backup that did not contain all data, I needed also to restore JSON [manually](https://community.grafana.com/t/how-to-import-a-panel-using-its-json-data/29715).
 
 9. For Setup of [OS/HW statistics](https://github.com/slittorin/home-assistant-setup#oshw-statistics), perform step 3 and 4 to add to crontab.\
   Once docker for Influx
