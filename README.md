@@ -507,10 +507,7 @@ Note to self here to ensure that we have better copy of images and important con
 ```
 2023/01/12 17:25:00 INFO: Restoring bucket "2fea3c080297848f" as "ha"
 2023/01/12 17:25:01 INFO: Restoring TSM snapshot for shard 1
-2023/01/12 17:25:03 INFO: Restoring TSM snapshot for shard 2
-.
-.
-.
+up to
 2023/01/12 17:25:49 INFO: Restoring TSM snapshot for shard 51
 ```
 	   With no error at the end.
