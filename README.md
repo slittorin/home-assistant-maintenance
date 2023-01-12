@@ -504,9 +504,9 @@ Note to self here to ensure that we have better copy of images and important con
          - These now resides in directory `/backup/restore/srv/ha-history-db/backup/backup.tmp` on the container.
        - Run the following command `influx restore -b ha /backup/restore/srv/ha-history-db/backup/backup.tmp`.
          - The output should be like the following:
-           `2023/01/12 17:25:00 INFO: Restoring bucket "2fea3c080297848f" as "ha"`
-           `2023/01/12 17:25:01 INFO: Restoring TSM snapshot for shard 1`
-	   `up to`
+           `2023/01/12 17:25:00 INFO: Restoring bucket "2fea3c080297848f" as "ha"`\
+           `2023/01/12 17:25:01 INFO: Restoring TSM snapshot for shard 1`\
+	   `up to`\
            `2023/01/12 17:25:49 INFO: Restoring TSM snapshot for shard 51`
 	   With no error at the end.
 9. -  -  -
