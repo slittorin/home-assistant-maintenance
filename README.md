@@ -532,6 +532,14 @@ Note to self here to ensure that we have better copy of images and important con
       - Extract the tar-file with `sudo tar xvf grafana-backup-daily-20230103_000201.tar -C ./restore` (in backup directory).
       - We stop the container to allow us to copy file without a running Grafana with `sudo docker-compose stop ha-grafana`.
       - Copy the database file to the container image with `sudo docker cp /srv/ha-grafana/backup/restore/srv/ha-grafana/backup/backup.tmp/grafana.db ha-grafana:/var/lib/grafana/`
+      FROM ha-grafana
+RUN chown grafana /var/lib/grafana/grafana.db
+RUN chgrp ugo+rw /var/lib/grafana/grafana.db
+      - Ensure that the permissions and ownership is correct with `sudo docker-compose exec ha-history-db bash` and the following:
+        - sudo docker-compose exec ha-history-db "chown grafana /var/lib/grafana/grafana.db"
+        - `cd /var/lib/grafana`
+	- 'chown grafana grafana.db`
+	- 'chmod ug+rw grafana.db`
       - Start the container again with `sudo docker-compose up -d`
     -  Update token in step 7 in Grafana.
     - Login to Grafana with `http://192.168.2.30:3000/` and ensure that all dashboards are there.
