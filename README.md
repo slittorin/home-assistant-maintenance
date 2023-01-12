@@ -503,36 +503,14 @@ Note to self here to ensure that we have better copy of images and important con
        - We have the backup directory on the host mounted, and we have extracted all files.
          - These now resides in directory `/backup/restore/srv/ha-history-db/backup/backup.tmp` on the container.
        - Run the following command `influx restore -b ha /backup/restore/srv/ha-history-db/backup/backup.tmp`.
-         - The output should be like the following:
+         - The output should be like the following:\
            `2023/01/12 17:25:00 INFO: Restoring bucket "2fea3c080297848f" as "ha"`\
            `2023/01/12 17:25:01 INFO: Restoring TSM snapshot for shard 1`\
-	   `up to`\
+	   up to\
            `2023/01/12 17:25:49 INFO: Restoring TSM snapshot for shard 51`
 	   With no error at the end.
-9. -  -  -
-https://github.com/influxdata/influxdb/issues/15323
-https://github.com/influxdata/influxdb/issues/22646
-     
-     - Copy the `HA_HISTORY_DB_ROOT_TOKEN` from `/srv/.env`.
-     - Initiate setup with the following `influx setup --token THECOPIEDROOTTOKEN`.
-     
-     - https://www.google.com/search?q=influx+docker-compose+container+restore+data+to+an+existing+database&ei=1yO_Y5ekJaH4qwHhnrfQCQ&ved=0ahUKEwjX66KFtcD8AhUh_CoKHWHPDZoQ4dUDCA8&uact=5&oq=influx+docker-compose+container+restore+data+to+an+existing+database&gs_lcp=Cgxnd3Mtd2l6LXNlcnAQAzoKCAAQRxDWBBCwAzoFCAAQogQ6BAghEApKBAhBGABKBAhGGABQgwVYnyJgkyRoA3ABeACAAUuIAdUFkgECMTKYAQCgAQHIAQjAAQE&sclient=gws-wiz-serp
-     - https://stackoverflow.com/questions/44226705/how-can-i-restore-a-database-to-a-influxdb-container
-     ----> https://www.grzegorowski.com/how-to-backup-and-restore-influxdb-which-runs-inside-docker-container
-     - https://www.influxdata.com/blog/backuprestore-of-influxdb-fromto-docker-containers/
-     
-     - So we can issue the restore command with `influx restore /backup/restore/srv/ha-history-db/backup/backup.tmp --full`.
-     - Error: failed to restore SQL snapshot: InfluxDB OSS-only command failed: 500 Internal Server Error: An internal error has occurred - check server logs
-     
-     - sudo journalctl -fu influxdb
-     - https://docs.influxdata.com/influxdb/v2.6/backup-restore/restore/
-     
-     - sudo docker-compose stop ha-history-db
-     - sudo docker-compose rm ha-history-db
-
-     - https://www.influxdata.com/blog/backuprestore-of-influxdb-fromto-docker-containers/
-     - https://hub.docker.com/_/influxdb
-----
+     - We now have a database restored.
+ 
 
 9. For Setup of [OS/HW statistics](https://github.com/slittorin/home-assistant-setup#oshw-statistics), perform step 3 and 4 to add to crontab.\
   Once docker for Influx
