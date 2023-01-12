@@ -473,7 +473,7 @@ Note to self here to ensure that we have better copy of images and important con
 
 7. Setup [Preparation and step 2](https://github.com/slittorin/home-assistant-setup#preparation) was not needed to be performed since we already had the restored files.
 
-8. Perform the following activities for Setup [Preparation and step 3](https://github.com/slittorin/home-assistant-setup#preparation):
+8. For setup [Preparation and step 3](https://github.com/slittorin/home-assistant-setup#preparation):
    - At directory `/root`
    - `ssh-copy-id pi@192.168.2.30`
    - `chmod 700 /root/.ssh/*`
@@ -487,7 +487,7 @@ Note to self here to ensure that we have better copy of images and important con
    - Step 1 through 3 is not needed since we have restored the files.
    - For step 4: Update `/srv/docker-compose.yml` so that image and `influxdb:latest` is changed to `influxdb:2.2.0-alpine` (note that it is not `influxdb:2.1.1-alpine`, due to the bug I isolated below).
    - Step 5 is not needed since we have restored the files.
-   - Run the activities in step 6.
+   - Perform the activities in step 6.
    - Now we have a container running for Influx, with the right version, and will need to restore database:
      - Since we got a new fresh instance, we also got the bucket HA, that we cannot restore directly to.
        - I tried here to perform `influx restore DIRTOBACKUPDIRECTORY --full` but got error `Error: failed to restore SQL snapshot: InfluxDB OSS-only command failed: 500 Internal Server Error: An internal error has occurred - check server logs`.
@@ -507,10 +507,15 @@ Note to self here to ensure that we have better copy of images and important con
            `2023/01/12 17:25:00 INFO: Restoring bucket "2fea3c080297848f" as "ha"`\
            `2023/01/12 17:25:01 INFO: Restoring TSM snapshot for shard 1`\
 	   up to\
-           `2023/01/12 17:25:49 INFO: Restoring TSM snapshot for shard 51`
+           `2023/01/12 17:25:49 INFO: Restoring TSM snapshot for shard 51`\
 	   With no error at the end.
      - We now have a database restored.
+   - Perform the activities in step 7.
+
+10. For [Backup of InfluxDB](https://github.com/slittorin/home-assistant-setup#backup-for-influxdb):
+    - Perform step 1 and 2.
  
+11. For [Installation of Grafana](https://github.com/slittorin/home-assistant-setup#installation-for-grafana):
 
 9. For Setup of [OS/HW statistics](https://github.com/slittorin/home-assistant-setup#oshw-statistics), perform step 3 and 4 to add to crontab.\
   Once docker for Influx
