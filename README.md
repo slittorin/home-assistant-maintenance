@@ -508,6 +508,7 @@ Note to self here to ensure that we have better copy of images and important con
          - docker logs ha-history-db
 
 https://github.com/influxdata/influxdb/issues/15323
+https://github.com/influxdata/influxdb/issues/22646
      
      - Copy the `HA_HISTORY_DB_ROOT_TOKEN` from `/srv/.env`.
      - Initiate setup with the following `influx setup --token THECOPIEDROOTTOKEN`.
