@@ -490,8 +490,8 @@ Note to self here to ensure that we have better copy of images and important con
     - Perform the activities in step 6.
     - Now we have a container running for Influx, with the right version, and will need to restore database:
       - Since we got a new fresh instance, we also got the bucket HA, that we cannot restore directly to.
-        - I tried here to perform `influx restore DIRTOBACKUPDIRECTORY --full` but got error `Error: failed to restore SQL snapshot: InfluxDB OSS-only command failed: 500 Internal Server Error: An internal error has occurred - check server logs`.
-          - Through `docker logs ha-history-db` I got more insight into the error `Error while freeing cold shard resources`, and that it was related to a race condition [bug](https://github.com/influxdata/influxdb/commit/39eeb3e), so I changed from 2.1.1-alpine to 2.2.0-alpine above, as the bug is fixed in this version.
+      - I tried here to perform `influx restore DIRTOBACKUPDIRECTORY --full` but got error `Error: failed to restore SQL snapshot: InfluxDB OSS-only command failed: 500 Internal Server Error: An internal error has occurred - check server logs`.
+        - Through `docker logs ha-history-db` I got more insight into the error `Error while freeing cold shard resources`, and that it was related to a race condition [bug](https://github.com/influxdata/influxdb/commit/39eeb3e), so I changed from 2.1.1-alpine to 2.2.0-alpine above, as the bug is fixed in this version.
       - I logged into Influx `http://192.168.2.30:8086/` and proceeded to `Data` -> `Buckets` -> `ha`, and changed the name of the bucket to `ha1`.
         - Thereafter I would be able to perform a normal restore (not full).
       - Isolate the latest tar-file for backup in `/srv/ha-history-db/backup`.
