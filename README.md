@@ -551,14 +551,17 @@ Note to self here to ensure that we have better copy of images and important con
 15. For Setup of [OS/HW statistics](https://github.com/slittorin/home-assistant-setup#oshw-statistics):
     - Perform step 3 and 4 to add to crontab.
 
-16. To get the copy of files from HA to server1 to work:
+16. For Setup of [Docker volume sizes](https://github.com/slittorin/home-assistant-setup/blob/main/README.md#docker-volume-sizes):
+    - Perform step 3 and 4 to add to crontab.
+
+17. To get the copy of files from HA to server1 to work:
     - On server1, in directory `/srv/ha/backup`: `chmod ugo+rw *`.
  
-17. Let the whole instance run for a hours and check
+18. Let the whole instance run for a hours and check
     - That data is coming into InfluxDB, through Grafana and appropriate dashboard for the day.
     - Check HA error logs.
 
-18. Let the whole instance run for a few days and check:
+19. Let the whole instance run for a few days and check:
     - On Server1:
       - That backup scripts is running correctly.
       - That os-stats script is running correctly.
