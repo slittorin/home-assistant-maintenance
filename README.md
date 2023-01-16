@@ -473,16 +473,18 @@ Note to self here to ensure that we have better copy of images and important con
 
 7. Setup [Preparation and step 2](https://github.com/slittorin/home-assistant-setup#preparation) was not needed to be performed since we already had the restored files.
 
-8. For setup [Preparation and step 3](https://github.com/slittorin/home-assistant-setup#preparation):
+8. Perform [Preparation and step 3](https://github.com/slittorin/home-assistant-setup#preparation) was not needed to be performed since we already had the restored files.
+
+9. For setup [Preparation and step 4](https://github.com/slittorin/home-assistant-setup#preparation):
    - At directory `/root`
    - `ssh-copy-id pi@192.168.2.30`
    - `chmod 700 /root/.ssh/*`
    - `cd /config/.ssh`
    - `cp /root/.ssh/* .`
 
-9. At this stage, comment out rows related to Grafana in `/srv/docker-compose.yml`.
+10. At this stage, comment out rows related to Grafana in `/srv/docker-compose.yml`.
 
-10. For [Setup of InfluxDB](https://github.com/slittorin/home-assistant-setup#installation-for-influxdb), perform the following:
+11. For [Setup of InfluxDB](https://github.com/slittorin/home-assistant-setup#installation-for-influxdb), perform the following:
     - Since I had not updated my Influx instance, I knew that it was still on version 2.1.1, and we want to restore data to the same version.
     - Step 1 through 3 is not needed since we have restored the files.
     - For step 4: Update `/srv/docker-compose.yml` so that image and `influxdb:latest` is changed to `influxdb:2.2.0-alpine` (note that it is not `influxdb:2.1.1-alpine`, due to the bug I isolated below).
@@ -513,12 +515,12 @@ Note to self here to ensure that we have better copy of images and important con
     - Perform the activities in step 7.
     - Log into Influx `http://192.168.2.30:8086/` and proceeded to `Data` -> `Buckets` -> `ha`, and remove the bucket `ha1` (renamed above).
 
-10. For [Backup of InfluxDB](https://github.com/slittorin/home-assistant-setup#backup-for-influxdb):
+12. For [Backup of InfluxDB](https://github.com/slittorin/home-assistant-setup#backup-for-influxdb):
     - Perform step 1 and 2.
 
-11. Remove the commments added in step 9, related to Grafana in `/srv/docker-compose.yml`.
+13. Remove the commments added in step 9, related to Grafana in `/srv/docker-compose.yml`.
 
-12. For [Installation of Grafana](https://github.com/slittorin/home-assistant-setup#installation-for-grafana):
+14. For [Installation of Grafana](https://github.com/slittorin/home-assistant-setup#installation-for-grafana):
     - Since I had not updated my Grafana instance, I knew that it was still on version 8.3.3, and we want to restore data to the same version.
     - Step 1 through 3 is not needed since we have restored the files.
     - For step 4: Update `/srv/docker-compose.yml` so that image and `grafana:latest` is changed to `grafana:8.3.3`.
@@ -542,28 +544,23 @@ Note to self here to ensure that we have better copy of images and important con
     - Login to Grafana with `http://192.168.2.30:3000/` and ensure that all dashboards are there.
       - Since I had to restore a backup that did not contain all changes made, I needed also to restore JSON [manually](https://community.grafana.com/t/how-to-import-a-panel-using-its-json-data/29715).
 
-13. For [Backup of Grafana](https://github.com/slittorin/home-assistant-setup#backup-for-grafana-database):
+15. For [Backup of Grafana](https://github.com/slittorin/home-assistant-setup#backup-for-grafana-database):
     - Perform step 2 and 3.
 
-14. For [Setup of Home Assistant](https://github.com/slittorin/home-assistant-setup#setup-for-home-assistant):
+16. For [Setup of Home Assistant](https://github.com/slittorin/home-assistant-setup#setup-for-home-assistant):
     - Perform the steps for [History DB setup](https://github.com/slittorin/home-assistant-setup#history-db-setup).
 
-15. For Setup of [OS/HW statistics](https://github.com/slittorin/home-assistant-setup#oshw-statistics):
+17. For Setup of [OS/HW statistics](https://github.com/slittorin/home-assistant-setup#oshw-statistics):
     - Perform step 3 and 4 to add to crontab.
 
-16. For Setup of [Docker volume sizes](https://github.com/slittorin/home-assistant-setup/blob/main/README.md#docker-volume-sizes):
+18. For Setup of [Docker volume sizes](https://github.com/slittorin/home-assistant-setup/blob/main/README.md#docker-volume-sizes):
     - Perform step 3 and 4 to add to crontab.
-
-17. To get the copy of files from HA to server1 to work:
-    - On server1:
-      - In directory `/srv`: `sudo chmod -R g+w ha`.
-      - In directory `/srv/ha/backup`: `sudo chmod ugo+rw *`.
  
-18. Let the whole instance run for a hours and check
+19. Let the whole instance run for a hours and check
     - That data is coming into InfluxDB, through Grafana and appropriate dashboard for the day.
     - Check HA error logs.
 
-19. Let the whole instance run for a few days and check:
+20. Let the whole instance run for a few days and check:
     - On Server1:
       - That backup scripts is running correctly.
       - That os-stats script is running correctly.
