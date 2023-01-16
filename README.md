@@ -555,7 +555,9 @@ Note to self here to ensure that we have better copy of images and important con
     - Perform step 3 and 4 to add to crontab.
 
 17. To get the copy of files from HA to server1 to work:
-    - On server1, in directory `/srv/ha/backup`: `chmod ugo+rw *`.
+    - On server1:
+      - In directory `/ha`: `sudo chmod -R g+w ha`.
+      - In directory `/srv/ha/backup`: `sudo chmod ugo+rw *`.
  
 18. Let the whole instance run for a hours and check
     - That data is coming into InfluxDB, through Grafana and appropriate dashboard for the day.
