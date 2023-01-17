@@ -512,6 +512,8 @@ Note to self here to ensure that we have better copy of images and important con
             `2023/01/12 17:25:49 INFO: Restoring TSM snapshot for shard 51`\
 	    With no error at the end.
       - We now have a database restored.
+        - **NOTE** We had no errors in restore, where however after a week I saw that data is missing between 8/8-2022 to 16/8-2022.
+          - Unknown cause and I will not try to restore this time period.
     - Perform the activities in step 7.
     - Log into Influx `http://192.168.2.30:8086/` and proceeded to `Data` -> `Buckets` -> `ha`, and remove the bucket `ha1` (renamed above).
 
