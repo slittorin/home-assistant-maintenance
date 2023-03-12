@@ -9,8 +9,8 @@
   - [Check updates for Grafana](https://github.com/slittorin/home-assistant-maintenance#check-updates-for-grafana)
   - [Remove obsolete entities](https://github.com/slittorin/home-assistant-maintenance#remove-obsolete-or-faulty-entities)
   - [Add domain sensors](https://github.com/slittorin/home-assistant-maintenance#add-domain-sensors)
-  - [Exclude sensors for InfluxDB integration #1](https://github.com/slittorin/home-assistant-maintenance#exclude-sensors-for-influxdb-integration)
-  - [Exclude sensors for InfluxDB integration #2](https://github.com/slittorin/home-assistant-maintenance#exclude-sensors-for-influxdb-integration)
+  - [Exclude sensors for InfluxDB integration #1](https://github.com/slittorin/home-assistant-maintenance#exclude-sensors-for-influxdb-integration-1)
+  - [Exclude sensors for InfluxDB integration #2](https://github.com/slittorin/home-assistant-maintenance#exclude-sensors-for-influxdb-integration-2)
 - Errors, problems and challenges:
   - [Incorrect SMA Energy data](https://github.com/slittorin/home-assistant-maintenance#incorrect-sma-energy-data)
   - [Incorrect Balboa Spa data](https://github.com/slittorin/home-assistant-maintenance#incorrect-balboa-spa-data)
