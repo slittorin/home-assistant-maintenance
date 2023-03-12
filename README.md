@@ -9,7 +9,8 @@
   - [Check updates for Grafana](https://github.com/slittorin/home-assistant-maintenance#check-updates-for-grafana)
   - [Remove obsolete entities](https://github.com/slittorin/home-assistant-maintenance#remove-obsolete-or-faulty-entities)
   - [Add domain sensors](https://github.com/slittorin/home-assistant-maintenance#add-domain-sensors)
-  - [Exclude sensors for InfluxDB integration](https://github.com/slittorin/home-assistant-maintenance#exclude-sensors-for-influxdb-integration)
+  - [Exclude sensors for InfluxDB integration #1](https://github.com/slittorin/home-assistant-maintenance#exclude-sensors-for-influxdb-integration)
+  - [Exclude sensors for InfluxDB integration #2](https://github.com/slittorin/home-assistant-maintenance#exclude-sensors-for-influxdb-integration)
 - Errors, problems and challenges:
   - [Incorrect SMA Energy data](https://github.com/slittorin/home-assistant-maintenance#incorrect-sma-energy-data)
   - [Incorrect Balboa Spa data](https://github.com/slittorin/home-assistant-maintenance#incorrect-balboa-spa-data)
@@ -71,7 +72,7 @@ With they way we are tracking data, we need add sensors when we add integrations
 2. Where required, add domains and sensors.
    - Update also [Visualization for Number of domains and entities](https://github.com/slittorin/home-assistant-visualization#number-of-domains-and-entities).
 
-### Exclude sensors for InfluxDB integration
+### Exclude sensors for InfluxDB integration #1
 
 See first [Governing principles](https://github.com/slittorin/home-assistant-setup#governing-principles) on how Historical data and Database retention is setup.
 
@@ -103,6 +104,10 @@ How I did the analysis for my setup:
             select * from homeassistant.statistics_meta where statistic_id = 'sensor.metering_current_l1'
             ```
             If it is not, you may want to create the statistics sensors yourself.
+
+### Exclude sensors for InfluxDB integration #1
+
+Test
 
 ## Errors, problems and challenges:
 
