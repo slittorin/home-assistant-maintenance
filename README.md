@@ -9,8 +9,8 @@
   - [Check updates for Grafana](https://github.com/slittorin/home-assistant-maintenance#check-updates-for-grafana)
   - [Remove obsolete entities](https://github.com/slittorin/home-assistant-maintenance#remove-obsolete-or-faulty-entities)
   - [Add domain sensors](https://github.com/slittorin/home-assistant-maintenance#add-domain-sensors)
-  - [Exclude sensors for InfluxDB integration #1](https://github.com/slittorin/home-assistant-maintenance#exclude-sensors-for-influxdb-integration-1)
-  - [Exclude sensors for InfluxDB integration #2](https://github.com/slittorin/home-assistant-maintenance#exclude-sensors-for-influxdb-integration-2)
+  - [Exclude sensors for InfluxDB integration #1](https://github.com/slittorin/home-assistant-maintenance#exclude-sensors-for-influxdb-integration)
+  - [Exclude sensors for InfluxDB integration #2](https://github.com/slittorin/home-assistant-maintenance#exclude-sensors-for-influxdb-integration-reduce-influxdb-size)
 - Errors, problems and challenges:
   - [Incorrect SMA Energy data](https://github.com/slittorin/home-assistant-maintenance#incorrect-sma-energy-data)
   - [Incorrect Balboa Spa data](https://github.com/slittorin/home-assistant-maintenance#incorrect-balboa-spa-data)
@@ -72,7 +72,9 @@ With they way we are tracking data, we need add sensors when we add integrations
 2. Where required, add domains and sensors.
    - Update also [Visualization for Number of domains and entities](https://github.com/slittorin/home-assistant-visualization#number-of-domains-and-entities).
 
-### Exclude sensors for InfluxDB integration #1
+### Exclude sensors for InfluxDB integration
+
+See also #2 below.
 
 See first [Governing principles](https://github.com/slittorin/home-assistant-setup#governing-principles) on how Historical data and Database retention is setup.
 
@@ -105,9 +107,45 @@ How I did the analysis for my setup:
             ```
             If it is not, you may want to create the statistics sensors yourself.
 
-### Exclude sensors for InfluxDB integration #1
+### Exclude sensors for InfluxDB integration - reduce InfluxDB size
 
-Test
+My InfluxDB quickly increased in size, up until approx 1030 MB in early 2023.
+
+After analysis of the data received into InfluxDB over a month, I isolated a number of further entities that filled up the database.
+Here i logged into Influx and did an export to CSV, and utilized a pivot-table to isolate the sensors that gave alot of data.
+
+I here isolated that:
+- I had at most 120K state-events per day was entered into the database(2022-11-17).
+- Even after reduction made in December 2022, I still had 40K state-events per day entered into the database.
+- I had over a year accumulated 38M state-events.
+- Each state-event, also adds 3-4 other measures (name, class and so forth), so the volume above is actually times 3 to 4.
+
+I isolated a bunch of further sensors (see [configuration.yaml](https://github.com/slittorin/home-assistant-config/blob/master/configuration.yaml)), that we downsampled further (see [Packages](https://github.com/slittorin/home-assistant-config/tree/master/packages)).
+
+Once these where running correctly with down-sampling, we are down to 4K-7K state-events per day.
+
+Now we needed to figure out how to remove data in Influx, and at the same time have hourly data.
+
+I came up with the below approach, including scripts that would ease the effort (yes, I know, if I had written in Python (or other) they would have been quicker to run).
+The convert-script can take max, min, average, last, first and sum for each hour for a sensor/entity.
+
+1. Isolate when the original-sensor started recording, and when it ended.
+   - See [Flux language](https://github.com/slittorin/home-assistant-visualization#generic-information).
+2. Isolate when down-sampled started, utilize same Flux language as above.
+3. Run script [influxdb-convert-to-hourly.sh](https://github.com/slittorin/server1-config/blob/master/influxdb-convert-to-hourly.sh) to get the hourly data exported as csv-files.
+   - Example: `sudo /srv/influxdb-convert-to-hourly.sh -f 20220118 -t 20220216 -e metering_current_l1 -n sma_metering_current_l1_min_hour -c min -d 4`.
+4. Verify the log and output. Including to remove any hourly-data in last csv-file, so it does not overlap with existing sensor/entity-data.
+5. Import the data into Flux with script [influxdb-import.sh](https://github.com/slittorin/server1-config/blob/master/influxdb-import.sh).
+   - Example: `sudo /srv/influxdb-import.sh -f 20220118 -t 20221110 -e sma_metering_power_supplied_min_hour`.
+6. Verify that the data is correctly written in to Influx. Use Grafana or Influx to verify this.
+7. Once we have all necessary hourly-data in InfluxDB, we can remove the data.
+   - Here we log into the Influx-container with `sudo docker-compose exec ha-history-db bash`.
+   - And then run delete commands, such as: `influx delete --bucket ha --start '2022-01-18T00:00:00.000Z' --stop '2022-02-17T00:01:00.000Z' --predicate 'entity_id="metering_current_l1"'`.
+   - Note that it is important to use the right entity_id.
+8. Verify that the data is correctly deleted from Influx. Use Grafana or Influx to verify this.
+
+I managed to the InfluxDB down from 1030MB to 196MB by doing this, and also greatly reduced the load/increase in size.
+A benefit is also that the load-time for some of the graphs has reduced 5-10 folds, as there is only hourly data to collect.
 
 ## Errors, problems and challenges:
 
