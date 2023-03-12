@@ -74,7 +74,7 @@ With they way we are tracking data, we need add sensors when we add integrations
 
 ### Exclude sensors for InfluxDB integration
 
-See also #2 below.
+See also 'Exclude sensors for InfluxDB integration - reduce InfluxDB size' below.
 
 See first [Governing principles](https://github.com/slittorin/home-assistant-setup#governing-principles) on how Historical data and Database retention is setup.
 
