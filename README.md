@@ -144,8 +144,8 @@ The convert-script can take max, min, average, last, first and sum for each hour
    - Note that it is important to use the right entity_id.
 8. Verify that the data is correctly deleted from Influx. Use Grafana or Influx to verify this.
 
-I managed to the InfluxDB down from 1030MB to 196MB by doing this, and also reduced the load/increase in size.
-A benefit is also that the load-time for some of the graphs has reduced 5-10 folds, as there is only hourly data to collect.
+I managed to the InfluxDB down from 1030MB to 130MB by doing this, and also reduced the load/daily-increase in size.
+A benefit is also that the load-time for some of the graphs has reduced 5-10 folds, as there is only hourly-data to collect.
 
 ## Errors, problems and challenges:
 
