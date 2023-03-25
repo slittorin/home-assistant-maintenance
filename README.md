@@ -616,3 +616,7 @@ Note to self here to ensure that we have better copy of images and important con
       - That `/config/scripts/remote_stats.sh` is running correctly
 
 Well thats all folks. Never forget to thorougly test restore of your data and configuration.
+
+### Restore of data from MySql to InfluxDB
+
+#### Error
