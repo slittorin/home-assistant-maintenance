@@ -671,7 +671,7 @@ For each new sensor, we also add the following headers:
 I also marked some sensor to not be imported, this as they have been removed after the SSD-crash (see [configuration.yaml](https://github.com/slittorin/home-assistant-config/blob/master/configuration.yaml).\
 Also made sure that sensors that was down-sampled after the SSD-crash, was recreated by using `min`, `max` and so forth to create manual data to be inserted.
 
-In all I was able to convert data for 142 sensors for the data-hole in InfluxDB between 2023-01-02 and 2023-01-12.
+And lastly I made a VB-script in the excel-matrix to create full text for csv-import.
 
 #### Steps to import the converted data.
 
@@ -679,15 +679,38 @@ I performed the following steps to import the converted data:
 1. Copy the csv-import data to a file on `server1`.
 2. Split the data into two files, one with only the first sensor, and the other with the rest of the sensors.
    - This so we can verify first with one import.
-4. Isolate a number of sensors to verify once import is done.
-5. Log into InfluxDB web, Data explorer, script editor (with raw data).
-6. Verify that there is no data for the specific period, with for instance:
+3. Isolate a number of sensors to verify once import is done.
+4. Log into InfluxDB-web, goto Data explorer and Script editor (with raw data).
+5. Verify that there is no data for the specific period, with for instance:
    ```
    from(bucket: "ha")
     |> range(start: 2023-01-02T00:00:00Z, stop: 2023-01-12T21:32:00.00Z)
     |> filter(fn: (r) => r["entity_id"] == "sma_total_yield_hour")
    ```
-7. Import the data with:
-8. Verify that the first sensor exists in InfluxDB by running step 6.
-9. Perform step 7 again with the second import-file.
-10. Verify the sensors isolated in step 4 (except the first one) in step 6, to verify that data was added.
+6. Logged into server1, perform:
+   - `sudo docker-compose exec ha-history-db bash`.
+   - In docker-instance for InfluxDB:
+     - Isolate the right file to import (in my case I have placed it in directory under `/srv/ha-history-db/import`, that is reached as `/import` in the docker-instance).
+     - Run `influx write -b ha --format csv --skipRowOnError -f FILETOIMPORT`
+       - No error should occur (in my case, no message at all).
+7. Verify that the first sensor exists in InfluxDB by running step 5.
+8. Perform step 6 again with the second import-file.
+9. Verify the sensors isolated in step 3 (except the first one) in step 5, to verify that data was added.
+
+Now we can go to HA and look at various dashboard to isolate that the data has been restored, and that they seem to be correct.
+
+By doing the above I got back 142 sensors with data either correct (max, min, state) or as close as possible (mean).
+
+#### Steps to export data
+
+Since we did not have any data in InfluxDB for the period 2023-01-02 through 2023-01-12, we did not have have any export data.\
+See [export for InfluxDB](https://github.com/slittorin/home-assistant-setup#export-for-influxdb) on how we export.
+
+We need to do this manually with the following on server1:
+- `sudo /srv/influxdb-export -f 20230102 -t 20230112`
+- Verify in dir `/srv/ha-history-db/export/2023` that the export-files are correctly created.
+  - Note that the files will be smaller since we do not have all measures restored (only measure for value).
+
+And finally we have restored history-data that was not in InfluxDB due to the SSD-crash.
+
+Hereafter the backup for InfluxDB will also contain the data from the import.
