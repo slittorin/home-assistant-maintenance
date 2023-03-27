@@ -635,6 +635,7 @@ However, there are some caveats:
 - We only have data for the hour (stored  at the beginning of the hour).
 - We will have data for each hour, even if there are no state-changes for the sensors that hour, i.e. we cannot tell if there is not state-change for this hour (most likely the values are zero).
 - We do not have the exact measures (if it is not a sensor where we can use `max`, `min`, `sum` or `state`).
+- We will only have one measure to add, and that is the sensor value. We will not get the other measures associated with the sensor (that is normally added by HA).
 
 #### Steps to prepare data.
 
@@ -679,7 +680,7 @@ I performed the following steps to import the converted data:
 2. Split the data into two files, one with only the first sensor, and the other with the rest of the sensors.
    - This so we can verify first with one import.
 4. Isolate a number of sensors to verify once import is done.
-5. Log into InfluxDB web and XXX.
+5. Log into InfluxDB web, Data explorer, script editor (with raw data).
 6. Verify that there is no data for the specific period, with for instance:
    ```
    from(bucket: "ha")
@@ -690,7 +691,3 @@ I performed the following steps to import the converted data:
 8. Verify that the first sensor exists in InfluxDB by running step 6.
 9. Perform step 7 again with the second import-file.
 10. Verify the sensors isolated in step 4 (except the first one) in step 6, to verify that data was added.
-
-from(bucket: "ha")
- |> range(start: 2023-01-01T00:00:00.000Z, stop: 2023-01-01T23:59:59.999Z)
- |> filter(fn: (r) => r["entity_id"] == "metering_total_absorbed")
