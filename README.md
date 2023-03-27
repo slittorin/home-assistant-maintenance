@@ -620,4 +620,52 @@ Well thats all folks. Never forget to thorougly test restore of your data and co
 
 ### Restore of data from MySql to InfluxDB
 
-#### Error
+The [SSD-disk crash](https://github.com/slittorin/home-assistant-maintenance/blob/main/README.md#failed-ssd-drive) left a hole in the continous data-feed from HA to InfluxDB.
+
+As we do not have any data to restore from InfluxDB, we need to have another source of data.
+
+The source to use is the HA-database in MySQL, where we have either event/state-data or history-data.
+In this case, we need to rely on history-data as the event/state-data is purged after a given period.
+
+The history-data is stored in table `statistics` where the id for the sensor is stored in `statistics_meta`.
+We have here data for each hour, with `max`, `min`, `mean`, `sum` and for some sensors `state`.
+Thus, we can recreate quite a lot of data.
+
+However, there are some caveats:
+- We only have data for the hour (stored  at the beginning of the hour).
+- We will have date each hour, even if there are no state-changes for the sensors that hour, i.e. we cannot tell if there is not state-change for this hour (most likely the values are zero).
+- We do not have the exact measures (if it is not a sensor where we can use `max`, `min`, `sum` or `state`).
+
+#### Steps to prepare data.
+
+This is the steps I utilized to be able to get the data converted from MySQL to InfluxDB (yes, I know there are other means, but here we can visualize and verify the data directly):
+1. Extract the table `statistics` and `statistics_meta` into csv-files (in this case with MySQL Workbench).
+   - Note that the extract shall be precise, so it do not overlap with datetime of data that exists in InfluxDB.
+   - Note also to extract with right character-set, so that unit or sensor is correct.
+2. Add the data to an excel-matrix.
+3. By formulas link the meta_id to sensor-name, and remove 'sensor.' from the name.
+4. Isolate the type of data we want to get, in this case `max`, `min`, `mean` or `state`.
+5. Build a csv-import string for the sensor.
+
+For example the following csv-import string: `,,0,2023-01-02T00:00:00Z,2023-01-12T21:32:00.00Z,2023-01-12T20:59:57.00Z,-6.307299999999999,value,%,sensor,electrical_daily_calculated_consumption_index_pct`
+Is built by creating the string with the following columns:
+- Empty first column (`,,`).
+- Table-id. This is an increasing value, for each sensor that is added.
+- Start-datetime, fixed for all import-rows.
+- End-datetime, fixed for all import-rows.
+- From `statistics`: The `datetime` of history-data (here converted to ':59:57:00Z' as I want the insert to be in the end of the hour, similar when existing sensors have state-triggered).
+- From `statistics`: The `value`. Based on the type of data (see above).
+- From `statistics_meta`: The `unit` of the sensor.
+- Fixed string `sensor`.
+- From `statistics_meta`: The `sensor name`.
+
+For each new sensor, we also add the following headers:
+```
+#group,false,false,true,true,false,false,true,true,true,true
+#datatype,string,long,dateTime:RFC3339,dateTime:RFC3339,dateTime:RFC3339,double,string,string,string,string
+#default,_result,,,,,,,,,
+,result,table,_start,_stop,_time,_value,_field,_measurement,domain,entity_id
+```
+
+I also marked some sensor to not be imported, this as they have been removed after the SSD-crash (see [configuration.yaml](https://github.com/slittorin/home-assistant-config/blob/master/configuration.yaml).
+Also also made sure that sensors that was down-sampled after the SSD-crash, was recreated by using `min`, `max` and so forth to create manual data to be inserted.
