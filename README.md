@@ -633,7 +633,7 @@ Thus, we can recreate quite a lot of data.
 
 However, there are some caveats:
 - We only have data for the hour (stored  at the beginning of the hour).
-- We will have date each hour, even if there are no state-changes for the sensors that hour, i.e. we cannot tell if there is not state-change for this hour (most likely the values are zero).
+- We will have data for each hour, even if there are no state-changes for the sensors that hour, i.e. we cannot tell if there is not state-change for this hour (most likely the values are zero).
 - We do not have the exact measures (if it is not a sensor where we can use `max`, `min`, `sum` or `state`).
 
 #### Steps to prepare data.
@@ -667,5 +667,30 @@ For each new sensor, we also add the following headers:
 ,result,table,_start,_stop,_time,_value,_field,_measurement,domain,entity_id
 ```
 
-I also marked some sensor to not be imported, this as they have been removed after the SSD-crash (see [configuration.yaml](https://github.com/slittorin/home-assistant-config/blob/master/configuration.yaml).
-Also also made sure that sensors that was down-sampled after the SSD-crash, was recreated by using `min`, `max` and so forth to create manual data to be inserted.
+I also marked some sensor to not be imported, this as they have been removed after the SSD-crash (see [configuration.yaml](https://github.com/slittorin/home-assistant-config/blob/master/configuration.yaml).\
+Also made sure that sensors that was down-sampled after the SSD-crash, was recreated by using `min`, `max` and so forth to create manual data to be inserted.
+
+In all I was able to convert data for 142 sensors for the data-hole in InfluxDB between 2023-01-02 and 2023-01-12.
+
+#### Steps to import the converted data.
+
+I performed the following steps to import the converted data:
+1. Copy the csv-import data to a file on `server1`.
+2. Split the data into two files, one with only the first sensor, and the other with the rest of the sensors.
+   - This so we can verify first with one import.
+4. Isolate a number of sensors to verify once import is done.
+5. Log into InfluxDB web and XXX.
+6. Verify that there is no data for the specific period, with for instance:
+   ```
+   from(bucket: "ha")
+    |> range(start: 2023-01-02T00:00:00Z, stop: 2023-01-12T21:32:00.00Z)
+    |> filter(fn: (r) => r["entity_id"] == "sma_total_yield_hour")
+   ```
+7. Import the data with:
+8. Verify that the first sensor exists in InfluxDB by running step 6.
+9. Perform step 7 again with the second import-file.
+10. Verify the sensors isolated in step 4 (except the first one) in step 6, to verify that data was added.
+
+from(bucket: "ha")
+ |> range(start: 2023-01-01T00:00:00.000Z, stop: 2023-01-01T23:59:59.999Z)
+ |> filter(fn: (r) => r["entity_id"] == "metering_total_absorbed")
