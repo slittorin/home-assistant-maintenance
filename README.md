@@ -618,7 +618,7 @@ Note to self here to ensure that we have better copy of images and important con
 
 Well thats all folks. Never forget to thorougly test restore of your data and configuration.
 
-### Restore of data from MySql to InfluxDB
+### After SSD-disk crash, restore of data from MySql to InfluxDB
 
 The [SSD-disk crash](https://github.com/slittorin/home-assistant-maintenance/blob/main/README.md#failed-ssd-drive) left a hole in the continous data-feed from HA to InfluxDB.
 
