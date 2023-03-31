@@ -714,3 +714,7 @@ We need to do this manually with the following on server1:
 And finally we have restored history-data that was not in InfluxDB due to the SSD-crash.
 
 Hereafter the backup for InfluxDB will also contain the data from the import.
+
+### After SSD-disk crash, restore of data from MySql to InfluxDB - Restore failure
+
+After the restore of data
