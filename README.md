@@ -16,6 +16,7 @@
   - [Incorrect Balboa Spa data](https://github.com/slittorin/home-assistant-maintenance#incorrect-balboa-spa-data)
   - [Failed SSD drive](https://github.com/slittorin/home-assistant-maintenance/blob/main/README.md#failed-ssd-drive)
   - [After SSD disk crash, restore of data from MySQL to InfluxDB](https://github.com/slittorin/home-assistant-maintenance/blob/main/README.md#after-ssd-disk-crash-restore-of-data-from-mysql-to-influxdb)
+  - [After SSD disk crash, restore of data from MySQL to InfluxDB - Restore failure](https://github.com/slittorin/home-assistant-maintenance/blob/main/README.md#after-ssd-disk-crash-restore-of-data-from-mysql-to-influxdb---restore-failure)
 
 ## Regular maintenance
 
@@ -556,8 +557,10 @@ Note to self here to ensure that we have better copy of images and important con
             `2023/01/12 17:25:49 INFO: Restoring TSM snapshot for shard 51`\
 	    With no error at the end.
       - We now have a database restored.
-        - **NOTE** We had no errors in restore, where however after a week I saw that data is missing between 8/8-2022 to 16/8-2022.
+        - **NOTE** We had no errors in restore, where however after a week I saw that data is missing between 8/8-2022 to 15/8-2022.
           - Unknown cause and I will not try to restore this time period.
+          - See further in [After SSD disk crash, restore of data from MySQL to InfluxDB - Restore failure](https://github.com/slittorin/home-assistant-maintenance/blob/main/README.md#after-ssd-disk-crash-restore-of-data-from-mysql-to-influxdb---restore-failure)
+          - Can this be related to one of the shard not being restored?
     - Perform the activities in step 7.
     - Log into Influx `http://192.168.2.30:8086/` and proceeded to `Data` -> `Buckets` -> `ha`, and remove the bucket `ha1` (renamed above).
 
@@ -717,4 +720,18 @@ Hereafter the backup for InfluxDB will also contain the data from the import.
 
 ### After SSD-disk crash, restore of data from MySql to InfluxDB - Restore failure
 
-After the restore of data
+The restore of data after the [failed SSD drive](https://github.com/slittorin/home-assistant-maintenance/blob/main/README.md#failed-ssd-drive), yielded a 'hole' in the data between 2022-08-07 and 2022-08-15.
+
+After analysis of the data in the history-table in MySQL, I can determine that data already started to decay/become intermittent during 7/8.\
+and this occurs during 8/8 through 15/8 to approx. 23.00.\
+Here I am not sure what this depends on, possibly this is related to malfunction in HA that was resolved after a reboot.
+
+In InfluxDB, I can see the decay/intermittent data in 7/8 and in 15/8, but no data between 8/8 through 14/8.\
+Thus, when performing restore of data in the same manner as in [After SSD disk crash, restore of data from MySQL to InfluxDB](https://github.com/slittorin/home-assistant-maintenance/blob/main/README.md#after-ssd-disk-crash-restore-of-data-from-mysql-to-influxdb), I need to take this into account.
+
+I ended up to only restore data for 8/8 through 14/8, this to not have double-data, or wrong data written on 7/8 and 15/8.\
+This means that the data cannot be trusted at 7/8 and 14/8, where-as the data can be considered as near as truth as possible between 8/8 and 14/8.
+
+I followed the instructions in [After SSD disk crash, restore of data from MySQL to InfluxDB](https://github.com/slittorin/home-assistant-maintenance/blob/main/README.md#after-ssd-disk-crash-restore-of-data-from-mysql-to-influxdb), with adaptions for the data.
+
+In total 116 sensors was restored.
