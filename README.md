@@ -702,7 +702,8 @@ I performed the following steps to import the converted data:
 
 Now we can go to HA and look at various dashboard to isolate that the data has been restored, and that they seem to be correct.
 
-By doing the above I got back 142 sensors with data either correct (max, min, state) or as close as possible (mean).
+By doing the above I got back 142 sensors with data either correct (max, min, state) or as close as possible (mean).\
+This out of 230+ sensors.
 
 #### Steps to export data
 
@@ -734,4 +735,5 @@ This means that the data cannot be trusted at 7/8 and 14/8, where-as the data ca
 
 I followed the instructions in [After SSD disk crash, restore of data from MySQL to InfluxDB](https://github.com/slittorin/home-assistant-maintenance/blob/main/README.md#after-ssd-disk-crash-restore-of-data-from-mysql-to-influxdb), with adaptions for the data.
 
-In total 116 sensors was restored.
+In total 116 sensors was restored.\
+This is vastly lower than 142 sensors for above, and 230+ sensors in total.
