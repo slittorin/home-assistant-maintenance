@@ -776,5 +776,7 @@ As we can only restore data from the backup made during the night, we loose a su
 
 1. Uncompress the latest backup.
    - In directory `/srv/ha-history-db/backup`, uncompress with `tar xvf FILENAME.tar`.
-   - The files should thereafter exist in `/srv/ha-history-db/backup/backup.tmp/`.
-3. asd
+   - The files should thereafter exist in `/srv/ha-history-db/backup/backup.tmp/` (or may be extracted in the same directory as `./srv`).
+2. Change the permission for the files in `/srv/ha-history-db/backup/backup.tmp/` with `chmod ugo+r *`.
+3. Login to the container with `sudo docker-compose exec ha-history-db bash`.
+   - Start the restore with `influx restore /backup/backup.tmp --bucket ha`.
