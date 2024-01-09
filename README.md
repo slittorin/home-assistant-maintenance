@@ -751,12 +751,29 @@ So, a mystery....!
 
 I performed the below steps to get the InfluxDB running again.
 
-#### Update Root-token
+#### Update Root (admin)-token
 
 As the root-token was also changed, I needed to change in server1, so that scripts would be able to run.
 
 1. Login to server1 and to InfluxDB.
 2. Copy the API-token for admin from InfluxDB into the variable `HA_HISTORY_DB_ROOT_TOKEN` in the file `/srv/.env' on server1.
+
+#### Restore the old InfluxDB-database
+
+We have two options, restore the database, or import all exported daily-files.\
+We choose to restore the database.
+
+The update on server1 was made roughly 15.00 on 2024-01-09 and the InfluxDB bucket 'ha' was up again around 16.30.\
+As we can only restore data from the backup made during the night, we loose a substantial amount of data for the day.
+
+1. Uncompress the latest backup.
+   - In directory `/srv/ha-history-db/backup`, uncompress with `tar xvf FILENAME.tar`.
+   - The dirs/files are exported in the same directory, so copy them to `/srv/ha-history-db/backup/backup.tmp/`.
+2. Change the permission for the files in `/srv/ha-history-db/backup/backup.tmp/` with `chmod ugo+r *`.
+3. Login to Login into InfluxDB and remove bucket 'ha'.
+4. Login to the container with `sudo docker-compose exec ha-history-db bash`.
+   - Start the restore with `influx restore /backup/backup.tmp --bucket ha`.
+   - Log files similar to this should occur `2024/01/09 17:00:12 INFO: Restoring TSM snapshot for shard 105`.
 
 #### Recreate API-tokens
 
@@ -765,18 +782,16 @@ As the root-token was also changed, I needed to change in server1, so that scrip
    - Added the new token in file `secrets.yaml' in the `config` directory in HA.
    - And thereafter restarted HA.
    - Data was then written to the InfluxDB-database correctly by HA.
-2. I recreated the API-token for 'Read to HA bucket' thas is used in Grafana.
+2. I recreated the API-token for 'Read from HA bucket' thas is used in Grafana.
    - I added the new token in for data source 'ha_history_db' in Grafana.
    - After this I could get data in Grafana to show up.
 
-#### Restore the old InfluxDB-database
+#### Verify that backup works
 
-The update on server1 was made roughly 15.00 on 2024-01-09 and the InfluxDB bucket 'ha' was up again around 16.30.\
-As we can only restore data from the backup made during the night, we loose a substantial amount of data for the day.
+1. Login to server1.
+2. In the directory `/srv/` run `sudo ./influxdb-backup.sh`.
+3. Verify the log `/srv/log/influxdb-backup.log`.
+   - So that no error has occured.
+4. Verify that database-file (for example `influxdb-backup-daily-20240109_180550.tar`)created in dir `/srv/ha-history-db/backup` seems correct in size.
 
-1. Uncompress the latest backup.
-   - In directory `/srv/ha-history-db/backup`, uncompress with `tar xvf FILENAME.tar`.
-   - The files should thereafter exist in `/srv/ha-history-db/backup/backup.tmp/` (or may be extracted in the same directory as `./srv`).
-2. Change the permission for the files in `/srv/ha-history-db/backup/backup.tmp/` with `chmod ugo+r *`.
-3. Login to the container with `sudo docker-compose exec ha-history-db bash`.
-   - Start the restore with `influx restore /backup/backup.tmp --bucket ha`.
+After this we should have a functional InfluxDB database/bucket for Home Assistant.
