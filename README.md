@@ -763,6 +763,8 @@ As the root-token was also changed, I needed to change in server1, so that scrip
 We have two options, restore the database, or import all exported daily-files.\
 We choose to restore the database.
 
+Note that this will remove/overwrite the 'ha' bucket.
+
 The update on server1 was made roughly 15.00 on 2024-01-09 and the InfluxDB bucket 'ha' was up again around 16.30.\
 As we can only restore data from the backup made during the night, we loose a substantial amount of data for the day.
 
