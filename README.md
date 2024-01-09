@@ -769,4 +769,12 @@ As the root-token was also changed, I needed to change in server1, so that scrip
    - I added the new token in for data source 'ha_history_db' in Grafana.
    - After this I could get data in Grafana to show up.
 
-#### Recreate API-tokens
+#### Restore the old InfluxDB-database
+
+The update on server1 was made roughly 15.00 on 2024-01-09 and the InfluxDB bucket 'ha' was up again around 16.30.\
+As we can only restore data from the backup made during the night, we loose a substantial amount of data for the day.
+
+1. Uncompress the latest backup.
+   - In directory `/srv/ha-history-db/backup`, uncompress with `tar xvf FILENAME.tar`.
+   - The files should thereafter exist in `/srv/ha-history-db/backup/backup.tmp/`.
+3. asd
