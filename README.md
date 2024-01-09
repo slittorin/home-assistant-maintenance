@@ -57,6 +57,8 @@ Note that you are encouraged to take backup prior to any upgrade.
 
 See release information [here](https://grafana.com/docs/grafana/latest/whatsnew/).
 
+https://grafana.com/docs/grafana/latest/upgrade-guide/
+
 Check [Setup instructions](https://github.com/slittorin/home-assistant-setup#installation-for-grafana).
 
 ### Remove obsolete or faulty entities
