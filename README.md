@@ -42,7 +42,7 @@ Note that you are encouraged to take backup prior to any upgrade.
 2. See release information [here](https://docs.influxdata.com/influxdb/v2/reference/release-notes/influxdb/) and [here](https://github.com/influxdata/influxdb/releases).
 3. Isolate if there is a need to upgrade the image, such as security, performance upgrades or bugs.
      - Bugs can be found [here](https://github.com/influxdata/influxdata-docker/issues?q=).
-     - See also Reddit [threat](https://www.reddit.com/r/influxdb/comments/15l0cto/support_timeline_for_influxdb_2/) about lifes-span for InfluxDB2.
+     - See also Reddit [threat](https://www.reddit.com/r/influxdb/comments/15l0cto/support_timeline_for_influxdb_2/) about life-span for InfluxDB2.
      - Look specifically for breaking changes.
      - If there is a need to upgrade, do this preferably in steps, and with full backup and verification of functionality in between.
 3. https://stackoverflow.com/questions/49316462/how-to-update-existing-images-with-docker-compose
