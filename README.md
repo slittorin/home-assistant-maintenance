@@ -17,6 +17,7 @@
   - [Failed SSD drive](https://github.com/slittorin/home-assistant-maintenance/blob/main/README.md#failed-ssd-drive)
   - [After SSD disk crash, restore of data from MySQL to InfluxDB](https://github.com/slittorin/home-assistant-maintenance/blob/main/README.md#after-ssd-disk-crash-restore-of-data-from-mysql-to-influxdb)
   - [After SSD disk crash, restore of data from MySQL to InfluxDB - Restore failure](https://github.com/slittorin/home-assistant-maintenance/blob/main/README.md#after-ssd-disk-crash-restore-of-data-from-mysql-to-influxdb---restore-failure)
+  - [After update and reboot of server1 caused the ha-database to be lost]()
 
 ## Regular maintenance
 
@@ -737,3 +738,26 @@ I followed the instructions in [After SSD disk crash, restore of data from MySQL
 
 In total 116 sensors was restored.\
 This is vastly lower than 142 sensors for above, and 230+ sensors in total.
+
+### After update and reboot of server1 caused the ha-database to be lost
+
+After login to server1, and performing an update of the OS (incl. docker and docker-compose), and after reboot, the InfluxDB 'ha' bucket was empty, and all API-tokens was lost (Admin token was set to other value).\
+No data was shown in Grafana (No data), and HA did not write data to InfluxDB.
+
+InfluxDB was not set into reset mode, for new installation, instead I could login fine with the admin-password and the 'ha' was there.
+
+I could not isolate any errors or warnings with `docker logs ha-history-db`.\
+So, a mystery....!
+
+I performed the below steps to get the InfluxDB running again.
+
+#### Recreate API-tokens
+
+- I recreated the API-token for 'Write to HA bucket' thas is used in Home Assistant.
+  - Added the new token in file `secrets.yaml' in the `config` directory in HA.
+  - And thereafter restarted HA.
+  - Data was then written to the InfluxDB-database correctly by HA.
+- I recreated the API-token for 'Read to HA bucket' thas is used in Grafana.
+  - I added the new token in for data source 'ha_history_db' in Grafana.
+  - After this I could get data in Grafana to show up.
+
