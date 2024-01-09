@@ -17,7 +17,7 @@
   - [Failed SSD drive](https://github.com/slittorin/home-assistant-maintenance/blob/main/README.md#failed-ssd-drive)
   - [After SSD disk crash, restore of data from MySQL to InfluxDB](https://github.com/slittorin/home-assistant-maintenance/blob/main/README.md#after-ssd-disk-crash-restore-of-data-from-mysql-to-influxdb)
   - [After SSD disk crash, restore of data from MySQL to InfluxDB - Restore failure](https://github.com/slittorin/home-assistant-maintenance/blob/main/README.md#after-ssd-disk-crash-restore-of-data-from-mysql-to-influxdb---restore-failure)
-  - [After update and reboot of server1 caused the ha-database to be lost]()
+  - [After update and reboot of server1 caused the ha-database to be lost](https://github.com/slittorin/home-assistant-maintenance/blob/main/README.md#after-update-and-reboot-of-server1-caused-the-ha-database-to-be-lost)
 
 ## Regular maintenance
 
@@ -751,13 +751,22 @@ So, a mystery....!
 
 I performed the below steps to get the InfluxDB running again.
 
+#### Update Root-token
+
+As the root-token was also changed, I needed to change in server1, so that scripts would be able to run.
+
+1. Login to server1 and to InfluxDB.
+2. Copy the API-token for admin from InfluxDB into the variable `HA_HISTORY_DB_ROOT_TOKEN` in the file `/srv/.env' on server1.
+
 #### Recreate API-tokens
 
-- I recreated the API-token for 'Write to HA bucket' thas is used in Home Assistant.
-  - Added the new token in file `secrets.yaml' in the `config` directory in HA.
-  - And thereafter restarted HA.
-  - Data was then written to the InfluxDB-database correctly by HA.
-- I recreated the API-token for 'Read to HA bucket' thas is used in Grafana.
-  - I added the new token in for data source 'ha_history_db' in Grafana.
-  - After this I could get data in Grafana to show up.
+1. Login into InfluxDB.
+1. I recreated the API-token for 'Write to HA bucket' thas is used in Home Assistant.
+   - Added the new token in file `secrets.yaml' in the `config` directory in HA.
+   - And thereafter restarted HA.
+   - Data was then written to the InfluxDB-database correctly by HA.
+2. I recreated the API-token for 'Read to HA bucket' thas is used in Grafana.
+   - I added the new token in for data source 'ha_history_db' in Grafana.
+   - After this I could get data in Grafana to show up.
 
+#### Recreate API-tokens
