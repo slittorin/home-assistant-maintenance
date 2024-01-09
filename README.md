@@ -35,14 +35,18 @@ Install through normal `apt` commands.
 ### Check updates for InfluxDB
 
 Check regularly if there is any important update that is required for InfluxDB docker-container.\
-Note that you are encoruaged to take backup prior to any upgrade.
+Note that you are encouraged to take backup prior to any upgrade.
+
+See release information [here]([https://grafana.com/docs/grafana/latest/whatsnew/](https://docs.influxdata.com/influxdb/v2/reference/release-notes/influxdb/)).
 
 Check [Setup instructions](https://github.com/slittorin/home-assistant-setup#installation-for-influxdb).
 
 ### Check updates for Grafana
 
 Check regularly if there is any important update that is required for Grafana docker-container.\
-Note that you are encoruaged to take backup prior to any upgrade.
+Note that you are encouraged to take backup prior to any upgrade.
+
+See release information [here](https://grafana.com/docs/grafana/latest/whatsnew/).
 
 Check [Setup instructions](https://github.com/slittorin/home-assistant-setup#installation-for-grafana).
 
