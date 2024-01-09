@@ -37,7 +37,13 @@ Install through normal `apt` commands.
 Check regularly if there is any important update that is required for InfluxDB docker-container.\
 Note that you are encouraged to take backup prior to any upgrade.
 
-See release information [here](https://docs.influxdata.com/influxdb/v2/reference/release-notes/influxdb/).
+1. Isolate current image-versions by login to server1 and running the command `sudo docker container ls`.
+   - The result at 9/1-2024 is `influxdb:2.2.0-alpine`. 
+2. See release information [here](https://docs.influxdata.com/influxdb/v2/reference/release-notes/influxdb/) and [here](https://github.com/influxdata/influxdb/releases).
+   - And isolate if there is a need to upgrade the image, such as security, performance upgrades or bugs.
+     - Bugs can be found [here](https://github.com/influxdata/influxdata-docker/issues?q=).
+     - Look specifically for breaking changes.
+   - Verify a
 
 Check [Setup instructions](https://github.com/slittorin/home-assistant-setup#installation-for-influxdb).
 
