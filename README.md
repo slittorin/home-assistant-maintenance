@@ -24,8 +24,8 @@
 ### Check updates for Home Assistant
 
 Check regularly if there is any update for Home Assistant: Core, Operation System or Supervisor.\
-Install through the UI or through manual update [link](https://www.home-assistant.io/common-tasks/os/#run-a-specific-version).
-`ha core update --backup --version VERSION`
+Install through the UI or through manual update [link](https://www.home-assistant.io/common-tasks/os/#run-a-specific-version).\
+`ha core update --backup --version VERSION`\
 Note that you are encoruaged to take backup prior to any upgrade.
 
 ### Check updates for server1
