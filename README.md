@@ -56,7 +56,7 @@ Check [Setup instructions](https://github.com/slittorin/home-assistant-setup#ins
 Check regularly if there is any important update that is required for Grafana docker-container.\
 Note that you are encouraged to take backup prior to any upgrade.
 
-See release information [here](https://grafana.com/docs/grafana/latest/whatsnew/).
+See release information [here](https://grafana.com/docs/grafana/latest/whatsnew/) and [here](https://grafana.com/docs/grafana/latest/release-notes/).
 
 https://grafana.com/docs/grafana/latest/upgrade-guide/
 
