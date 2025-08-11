@@ -46,10 +46,18 @@ Note that you are encouraged to take backup prior to any upgrade.
      - See also Reddit [threat](https://www.reddit.com/r/influxdb/comments/15l0cto/support_timeline_for_influxdb_2/) about life-span for InfluxDB2.
      - Look specifically for breaking changes.
      - If there is a need to upgrade, do this preferably in steps, and with full backup and verification of functionality in between.
-3. https://stackoverflow.com/questions/49316462/how-to-update-existing-images-with-docker-compose
-4. https://tcude.net/updating-container-with-docker-compose/
-
-Check [Setup instructions](https://github.com/slittorin/home-assistant-setup#installation-for-influxdb).
+3. Isolate the image to upgrade to.
+4. Log on to server1:
+   - Go to directory `/srv/`.
+   - Check the image running for InfluxDB with `docker ps`.
+   - Change and save the file `docker-compose.yml`.
+     - For `ha-history-db`, change the line with `influxdb:2.2.0-alpine` (or similar) to the image chosen in step 3.
+   - Allow docker-compose to pull the image with `sudo docker-compose pull`.
+     - Ensure that the image is pulled, and that there are no warnings or errors.
+   - Allow docker-compose to update update the docker with `sudo docker-compose up -d --remove-orphans`.
+     - Ensure that there are no warnings or errors.
+   - Check the image running for grafana with `docker ps` and that it is the right image.
+5. Go to the InfluxDB web-interface and verify functionality.
 
 ### Check updates for Grafana
 
@@ -58,6 +66,7 @@ Note that you are encouraged to take backup prior to any upgrade.
 
 1. Isolate current image-versions by login to server1 and running the command `sudo docker container ls`.
    - The result at 9/1-2024 is `grafana/grafana:8.3.3`.
+   - The result at 11/8-2025 is `grafana/grafana:8.3.11`.
    - See release information [here](https://grafana.com/docs/grafana/latest/whatsnew/) and [here](https://grafana.com/docs/grafana/latest/release-notes/).
 2. Isolate if there is a need to upgrade the image, such as security, performance upgrades or bugs.
    - Bugs can be found [here]((https://github.com/grafana/grafana/issues).
@@ -66,7 +75,7 @@ Note that you are encouraged to take backup prior to any upgrade.
 3. Isolate the image to upgrade to.
 4. Log on to server1:
    - Go to directory `/srv/`.
-   - Check the image running for grafana with `docker ps`.
+   - Check the image running for Grafana with `docker ps`.
    - Change and save the file `docker-compose.yml`.
      - For `ha-grafana`, change the line with `image: grafana/grafana:8.3.3` (or similar) to the image chosen in step 3.
    - Allow docker-compose to pull the image with `sudo docker-compose pull`.
@@ -74,11 +83,7 @@ Note that you are encouraged to take backup prior to any upgrade.
    - Allow docker-compose to update update the docker with `sudo docker-compose up -d --remove-orphans`.
      - Ensure that there are no warnings or errors.
    - Check the image running for grafana with `docker ps` and that it is the right image.
-5. Go to the grafana web-interface and verify functionality.
-
-https://grafana.com/docs/grafana/latest/upgrade-guide/
-
-Check [Setup instructions](https://github.com/slittorin/home-assistant-setup#installation-for-grafana).
+5. Go to the Grafana web-interface and verify functionality.
 
 ### Remove obsolete or faulty entities
 
