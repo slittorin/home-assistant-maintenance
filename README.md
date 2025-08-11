@@ -56,7 +56,22 @@ Check [Setup instructions](https://github.com/slittorin/home-assistant-setup#ins
 Check regularly if there is any important update that is required for Grafana docker-container.\
 Note that you are encouraged to take backup prior to any upgrade.
 
-See release information [here](https://grafana.com/docs/grafana/latest/whatsnew/) and [here](https://grafana.com/docs/grafana/latest/release-notes/).
+1. Isolate current image-versions by login to server1 and running the command `sudo docker container ls`.
+   - The result at 9/1-2024 is `grafana/grafana:8.3.3`.
+   - See release information [here](https://grafana.com/docs/grafana/latest/whatsnew/) and [here](https://grafana.com/docs/grafana/latest/release-notes/).
+2. Isolate if there is a need to upgrade the image, such as security, performance upgrades or bugs.
+   - Bugs can be found [here]((https://github.com/grafana/grafana/issues).
+   - Breaking changes can be found [here](https://grafana.com/docs/grafana/latest/breaking-changes/).
+   - Further information can be found [here](https://grafana.com/docs/grafana/latest/whatsnew/whats-new-in-v9-0/) (go to the correct version).
+3. Isolate the image to upgrade to.
+4. Log on to server1:
+   - Go to directory `/srv/`.
+   - Check the image running for grafana with `docker ps`.
+   - Change and save the file `docker-compose.yml`.
+     - For `ha-grafana`, change the line with `image: grafana/grafana:8.3.3` (or similar) to the image chosen in step 3.
+   - Allow docker-compose to pull the image with `docker-compose pull`.
+     - Ensure that the image is pulled, and that there are no warnings or errors.
+   - asd
 
 https://grafana.com/docs/grafana/latest/upgrade-guide/
 
