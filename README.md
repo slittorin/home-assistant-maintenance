@@ -72,6 +72,7 @@ Note that you are encouraged to take backup prior to any upgrade.
    - Bugs can be found [here]((https://github.com/grafana/grafana/issues).
    - Breaking changes can be found [here](https://grafana.com/docs/grafana/latest/breaking-changes/).
    - Further information can be found [here](https://grafana.com/docs/grafana/latest/whatsnew/whats-new-in-v9-0/) (go to the correct version).
+   - If there is a need to upgrade, do this preferably in steps, and with full backup and verification of functionality in between.
 3. Isolate the image to upgrade to.
 4. Log on to server1:
    - Go to directory `/srv/`.
