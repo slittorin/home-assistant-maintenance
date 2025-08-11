@@ -48,7 +48,11 @@ Note that you are encouraged to take backup prior to any upgrade.
      - If there is a need to upgrade, do this preferably in steps, and with full backup and verification of functionality in between.
 3. Isolate the image to upgrade to.
 4. Log on to server1:
-   - Go to directory `/srv/`.
+   - Go to directory `/srv`.
+   - Run a backup with `sudo influxdb-backup.sh`.
+     - Verify that backup has been created in directory `/srv/ha-history-db/backup`, with a correct size (check past backups).
+     - Check the last part of the logfile `/srv/log/influxdb-backup.log` that the backup was done correctly.
+     - If there are errors, do not upgrade.
    - Check the image running for InfluxDB with `docker ps`.
    - Change and save the file `docker-compose.yml`.
      - For `ha-history-db`, change the line with `influxdb:2.2.0-alpine` (or similar) to the image chosen in step 3.
@@ -75,7 +79,11 @@ Note that you are encouraged to take backup prior to any upgrade.
    - If there is a need to upgrade, do this preferably in steps, and with full backup and verification of functionality in between.
 3. Isolate the image to upgrade to.
 4. Log on to server1:
-   - Go to directory `/srv/`.
+   - Go to directory `/srv`.
+   - Run a backup with `sudo grafana-backup.sh`.
+     - Verify that backup has been created in directory `/srv/ha-grafana/backup`.
+     - Check the last part of the logfile `/srv/log/grafana-backup.log` that the backup was done correctly, with a correct size (check past backups).
+     - If there are errors, do not upgrade.
    - Check the image running for Grafana with `docker ps`.
    - Change and save the file `docker-compose.yml`.
      - For `ha-grafana`, change the line with `image: grafana/grafana:8.3.3` (or similar) to the image chosen in step 3.
