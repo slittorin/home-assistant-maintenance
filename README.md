@@ -69,9 +69,12 @@ Note that you are encouraged to take backup prior to any upgrade.
    - Check the image running for grafana with `docker ps`.
    - Change and save the file `docker-compose.yml`.
      - For `ha-grafana`, change the line with `image: grafana/grafana:8.3.3` (or similar) to the image chosen in step 3.
-   - Allow docker-compose to pull the image with `docker-compose pull`.
+   - Allow docker-compose to pull the image with `sudo docker-compose pull`.
      - Ensure that the image is pulled, and that there are no warnings or errors.
-   - asd
+   - Allow docker-compose to update update the docker with `sudo docker-compose up -d --remove-orphans`.
+     - Ensure that there are no warnings or errors.
+   - Check the image running for grafana with `docker ps` and that it is the right image.
+5. Go to the grafana web-interface and verify functionality.
 
 https://grafana.com/docs/grafana/latest/upgrade-guide/
 
