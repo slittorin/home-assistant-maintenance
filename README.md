@@ -69,8 +69,6 @@ Check regularly if there is any important update that is required for Grafana do
 Note that you are encouraged to take backup prior to any upgrade.
 
 1. Isolate current image-versions by login to server1 and running the command `sudo docker container ls`.
-   - The result at 9/1-2024 is `grafana/grafana:8.3.3`.
-   - The result at 11/8-2025 is `grafana/grafana:8.3.11`.
    - See release information [here](https://grafana.com/docs/grafana/latest/whatsnew/) and [here](https://grafana.com/docs/grafana/latest/release-notes/).
 2. Isolate if there is a need to upgrade the image, such as security, performance upgrades or bugs.
    - Bugs can be found [here]((https://github.com/grafana/grafana/issues).
