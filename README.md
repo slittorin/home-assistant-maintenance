@@ -49,7 +49,7 @@ Note that you are encouraged to take backup prior to any upgrade.
 3. Isolate the image to upgrade to.
 4. Log on to server1:
    - Go to directory `/srv`.
-   - Run a backup with `sudo influxdb-backup.sh`.
+   - Run a backup with `sudo ./influxdb-backup.sh`.
      - Verify that backup has been created in directory `/srv/ha-history-db/backup`, with a correct size (check past backups).
      - Check the last part of the logfile `/srv/log/influxdb-backup.log` that the backup was done correctly.
      - If there are errors, do not upgrade.
@@ -78,7 +78,7 @@ Note that you are encouraged to take backup prior to any upgrade.
 3. Isolate the image to upgrade to.
 4. Log on to server1:
    - Go to directory `/srv`.
-   - Run a backup with `sudo grafana-backup.sh`.
+   - Run a backup with `sudo ./grafana-backup.sh`.
      - Verify that backup has been created in directory `/srv/ha-grafana/backup`.
      - Check the last part of the logfile `/srv/log/grafana-backup.log` that the backup was done correctly, with a correct size (check past backups).
      - If there are errors, do not upgrade.
