@@ -111,6 +111,42 @@ Perform the following:
 - For `The unit of this entity doesn't atch a unit of the device class`:
   - Correct the `unit_of_measurement` in the yaml-file and reload the sensors (or restart HA).
 
+### Remove data from Home Assistant database
+
+Note that we do not delete data from the states-tables, instead these will be flushed out upon updates.
+We delete historical data instead.
+
+Utilize the followin SQL to isolate the right metadata_id:
+```sql
+SELECT id AS stats_metadata_id, statistic_id
+FROM statistics_meta
+WHERE statistic_id = 'sensor.balboa_spa_circulation_pump_heater_consumption_hour';
+```
+Lets say the id is 163 from the result.
+
+After this delete the data for the day with:
+```sql
+DELETE FROM statistics_short_term
+WHERE metadata_id = X
+  AND start_ts >= UNIX_TIMESTAMP(CONVERT_TZ(
+        '2025-12-15 00:00:00', 'Europe/Stockholm', 'UTC'
+      ))
+  AND start_ts <  UNIX_TIMESTAMP(CONVERT_TZ(
+        '2025-12-17 00:00:00', 'Europe/Stockholm', 'UTC'
+      ));
+
+DELETE FROM statistics
+WHERE metadata_id = X
+  AND start_ts >= UNIX_TIMESTAMP(CONVERT_TZ(
+        '2025-12-15 00:00:00', 'Europe/Stockholm', 'UTC'
+      ))
+  AND start_ts <  UNIX_TIMESTAMP(CONVERT_TZ(
+        '2025-12-17 00:00:00', 'Europe/Stockholm', 'UTC'
+      ));
+```
+
+Update the time accordingly.
+
 ### Add domain sensors
 
 With they way we are tracking data, we need add sensors when we add integrations/add-ons/devices to our HA system.
