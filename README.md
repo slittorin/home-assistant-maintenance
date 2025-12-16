@@ -128,7 +128,7 @@ Lets say the id is 163 from the result.
 After this delete the data for the day with:
 ```sql
 DELETE FROM statistics_short_term
-WHERE metadata_id = X
+WHERE metadata_id = 163
   AND start_ts >= UNIX_TIMESTAMP(CONVERT_TZ(
         '2025-12-15 00:00:00', 'Europe/Stockholm', 'UTC'
       ))
@@ -137,7 +137,7 @@ WHERE metadata_id = X
       ));
 
 DELETE FROM statistics
-WHERE metadata_id = X
+WHERE metadata_id = 163
   AND start_ts >= UNIX_TIMESTAMP(CONVERT_TZ(
         '2025-12-15 00:00:00', 'Europe/Stockholm', 'UTC'
       ))
