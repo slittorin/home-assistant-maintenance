@@ -8,6 +8,7 @@
   - [Check updates for InfluxDB](https://github.com/slittorin/home-assistant-maintenance#check-updates-for-influxdb)
   - [Check updates for Grafana](https://github.com/slittorin/home-assistant-maintenance#check-updates-for-grafana)
   - [Remove obsolete entities](https://github.com/slittorin/home-assistant-maintenance#remove-obsolete-or-faulty-entities)
+  - [Remove data from Home Assistant database](https://github.com/slittorin/home-assistant-maintenance?tab=readme-ov-file#remove-data-from-home-assistant-database)
   - [Add domain sensors](https://github.com/slittorin/home-assistant-maintenance#add-domain-sensors)
   - [Exclude sensors for InfluxDB integration](https://github.com/slittorin/home-assistant-maintenance#exclude-sensors-for-influxdb-integration)
   - [Exclude sensors for InfluxDB integration - reduce InfluxDB size](https://github.com/slittorin/home-assistant-maintenance#exclude-sensors-for-influxdb-integration---reduce-influxdb-size)
