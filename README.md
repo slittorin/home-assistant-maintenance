@@ -114,8 +114,30 @@ Perform the following:
 
 ### Remove data from Home Assistant database
 
-Note that we do not delete data from the states-tables, instead these will be flushed out upon updates.
-We delete historical data instead.
+Install Add-On for phpMyAdmin, or connect to the database from externally.
+
+Utilize with caution, always take backup before deleting.
+
+We utilize the examples below for the following sensor: `sensor.balboa_spa_circulation_pump_heater_consumption_hour`
+
+#### Isolate the right metadata_id
+
+Utilize the followin SQL to isolate the right metadata_id:
+```sql
+SELECT *
+FROM homeassistant.states_meta
+WHERE entity_id = 'sensor.balboa_spa_circulation_pump_heater_consumption_hour';
+```
+Take note of the `metadata_id`, in this case it is `270`.
+
+#### Remove data from Home Assistant state table
+
+First, isolate the right data for the specific time period:
+```sql
+
+```
+
+#### Remove data from Home Assistant historical tables
 
 Utilize the followin SQL to isolate the right metadata_id:
 ```sql
