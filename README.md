@@ -120,30 +120,30 @@ Utilize with caution, always take backup before deleting.
 
 We utilize the examples below for the following sensor: `sensor.balboa_spa_circulation_pump_heater_consumption_hour`
 
-#### Isolate the right metadata_id
+#### Remove data from Home Assistant state table
 
+1. Isolate the right metadata_id
 Utilize the followin SQL to isolate the right metadata_id:
 ```sql
 SELECT *
 FROM homeassistant.states_meta
 WHERE entity_id = 'sensor.balboa_spa_circulation_pump_heater_consumption_hour';
 ```
-Take note of the `metadata_id`, in this case it is `270`.
+Take note of the value for `metadata_id` (A), in this case it is `270`.
 
-#### Remove data from Home Assistant state table
-
-1. Isolate the right data for the specific time period:
+2. Isolate the right data for the specific time period:
+Set the value for `metadata_id` to the (A) value.
 ```sql
 SELECT *
 FROM homeassistant.states
 WHERE metadata_id = 270
   AND last_updated_ts BETWEEN UNIX_TIMESTAMP('2026-03-02 00:00:00') AND UNIX_TIMESTAMP('2026-03-03 23:59:59');
 ```
-Take note of the value for `state_id` (A), in this case it is `607603044`. This is the id to be deleted.\
-Take note of the value for `old_state_id` (B), in this case it is `607541794`. This is the id we need to not break the index.
+Take note of the value for `state_id` (B), in this case it is `607603044`. This is the id to be deleted.\
+Take note of the value for `old_state_id` (C), in this case it is `607541794`. This is the id we need to not break the index.
 
-2. Verify the data before deletion:
-Set the value for `state_id` to the (A) value.
+3. Verify the data before deletion:
+Set the value for `state_id` to the (B) value.
 ```sql
 SELECT *
 FROM homeassistant.states
@@ -151,32 +151,72 @@ WHERE state_id = 607603044;
 ```
 If the row presented is the correct one to delete, proceed with the below.
 
-3. We need to get the row that references the id to be deleted:
-Set the value for `old_state_id` to the (A) value.
+4. We need to get the row that references the id to be deleted:
+Set the value for `old_state_id` to the (B) value.
 ```sql
 SELECT *
 FROM homeassistant.states
 WHERE old_state_id = 607603044;
 ```
-Take note of the value for `state_id` (C), in this case it is `607632453`. This is the id we need to update for `old_state_id`.
+Take note of the value for `state_id` (D), in this case it is `607632453`. This is the id we need to update for `old_state_id`.
 
-4. We need to update so that the index do not break:
-Set the value for `old_state_id` to the (B) value.\
-Set the value for `state_id` to the (C) value.
+5. We need to update so that the index do not break:
+Set the value for `old_state_id` to the (C) value.\
+Set the value for `state_id` to the (D) value.
 ```sql
 UPDATE homeassistant.states
 SET old_state_id = 607541794
 WHERE state_id = 607632453;
 ```
 
-5. We thereafter can delete the state:
-Set the value for `state_id` to the (A) value.
+6. We thereafter can delete the state:
+Set the value for `state_id` to the (B) value.
 ```sql
 DELETE FROM homeassistant.states
 WHERE state_id = 607603044;
 ```
 
 #### Remove data from Home Assistant historical tables
+
+1. Isolate the right metadata_id
+Utilize the followin SQL to isolate the right metadata_id:
+```sql
+SELECT *
+FROM homeassistant.statistics_meta
+WHERE statistic_id = 'sensor.balboa_spa_circulation_pump_heater_consumption_hour';
+```
+Take note of the value for `id` (E), in this case it is `163`.
+
+2. Isolate the right data for the specific time period:
+Set the value for `metadata_id` to the (E) value.
+```sql
+SELECT *
+FROM homeassistant.statistics
+WHERE metadata_id = 163
+  AND created_ts BETWEEN UNIX_TIMESTAMP('2026-03-02 00:00:00') AND UNIX_TIMESTAMP('2026-03-03 23:59:59');
+```
+Take note of the value for `id` (F), in this case it is `8073434`. This is the id to be deleted.
+
+3. Verify the data before deletion:
+Set the value for `id` to the (F) value.
+```sql
+SELECT *
+FROM homeassistant.statistics
+WHERE id = 8073434;
+```
+If the row presented is the correct one to delete, proceed with the below.
+
+6. We thereafter can delete the state:
+Set the value for `id` to the (F) value.
+```sql
+DELETE FROM homeassistant.statistics
+WHERE id = 8073434;
+```
+
+
+
+
+
 
 Utilize the followin SQL to isolate the right metadata_id:
 ```sql
