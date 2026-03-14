@@ -223,11 +223,13 @@ Note that sum-values in the table is not updated with below method.
 
 1. Isolate the right data for the specific time period:
 Set the value for `metadata_id` to the (E) value.
+Update the limit to appropriate value if data is not found.
 ```sql
 SELECT *
 FROM homeassistant.statistics_short_term
 WHERE metadata_id = 163
-  AND created_ts BETWEEN UNIX_TIMESTAMP('2026-03-02 00:00:00') AND UNIX_TIMESTAMP('2026-03-03 23:59:59');
+  AND created_ts BETWEEN UNIX_TIMESTAMP('2026-03-02 00:00:00') AND UNIX_TIMESTAMP('2026-03-03 23:59:59')
+LIMIT 1000;
 ```
 Isolate the value(s) for `id` (G), in this case it is `96114730`. This is the id to be deleted.
 
