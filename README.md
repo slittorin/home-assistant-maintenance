@@ -133,11 +133,13 @@ Take note of the value for `metadata_id` (A), in this case it is `270`.
 
 2. Isolate the right data for the specific time period:
 Set the value for `metadata_id` to the (A) value.
+Update the limit to appropriate value if data is not found.
 ```sql
 SELECT *
 FROM homeassistant.states
 WHERE metadata_id = 270
-  AND last_updated_ts BETWEEN UNIX_TIMESTAMP('2026-03-02 00:00:00') AND UNIX_TIMESTAMP('2026-03-03 23:59:59');
+  AND last_updated_ts BETWEEN UNIX_TIMESTAMP('2026-03-02 00:00:00') AND UNIX_TIMESTAMP('2026-03-03 23:59:59')
+LIMIT 1000;
 ```
 Isolate the value for `state_id` (B), in this case it is `607603044`. This is the id to be deleted.\
 Isolate the value for `old_state_id` (C), in this case it is `607541794`. This is the id we need to not break the index.
@@ -189,11 +191,13 @@ Take note of the value for `id` (E), in this case it is `163`.
 
 2. Isolate the right data for the specific time period:
 Set the value for `metadata_id` to the (E) value.
+Update the limit to appropriate value if data is not found.
 ```sql
 SELECT *
 FROM homeassistant.statistics
 WHERE metadata_id = 163
-  AND created_ts BETWEEN UNIX_TIMESTAMP('2026-03-02 00:00:00') AND UNIX_TIMESTAMP('2026-03-03 23:59:59');
+  AND created_ts BETWEEN UNIX_TIMESTAMP('2026-03-02 00:00:00') AND UNIX_TIMESTAMP('2026-03-03 23:59:59')
+LIMIT 1000;
 ```
 Isolate the value for `id` (F), in this case it is `8073434`. This is the id to be deleted.
 
@@ -215,16 +219,9 @@ WHERE id = 8073434;
 
 #### Remove data from Home Assistant statistics_short_term table
 
-1. Isolate the right metadata_id
-Utilize the followin SQL to isolate the right metadata_id:
-```sql
-SELECT *
-FROM homeassistant.statistics_short_term
-WHERE statistic_id = 'sensor.balboa_spa_circulation_pump_heater_consumption_hour';
-```
-Take note of the value for `id` (E), in this case it is `163`.
+Note that sum-values in the table is not updated with below method.
 
-2. Isolate the right data for the specific time period:
+1. Isolate the right data for the specific time period:
 Set the value for `metadata_id` to the (E) value.
 ```sql
 SELECT *
@@ -232,40 +229,23 @@ FROM homeassistant.statistics_short_term
 WHERE metadata_id = 163
   AND created_ts BETWEEN UNIX_TIMESTAMP('2026-03-02 00:00:00') AND UNIX_TIMESTAMP('2026-03-03 23:59:59');
 ```
+Isolate the value(s) for `id` (G), in this case it is `96114730`. This is the id to be deleted.
 
-
-
-
-Utilize the followin SQL to isolate the right metadata_id:
+3. Verify the data before deletion:
+Set the value for `id` to the (G) value.
 ```sql
-SELECT id AS stats_metadata_id, statistic_id
-FROM statistics_meta
-WHERE statistic_id = 'sensor.balboa_spa_circulation_pump_heater_consumption_hour';
+SELECT *
+FROM homeassistant.statistics_short_term
+WHERE id = 96114730;
 ```
-Lets say the id is 163 from the result.
+If the row presented is the correct one to delete, proceed with the below.
 
-After this delete the data for the day with:
+4. We thereafter can delete the statistics_short_term-id:
+Set the value for `id` to the (F) value.
 ```sql
-DELETE FROM statistics_short_term
-WHERE metadata_id = 163
-  AND start_ts >= UNIX_TIMESTAMP(CONVERT_TZ(
-        '2025-12-15 00:00:00', 'Europe/Stockholm', 'UTC'
-      ))
-  AND start_ts <  UNIX_TIMESTAMP(CONVERT_TZ(
-        '2025-12-17 00:00:00', 'Europe/Stockholm', 'UTC'
-      ));
-
-DELETE FROM statistics
-WHERE metadata_id = 163
-  AND start_ts >= UNIX_TIMESTAMP(CONVERT_TZ(
-        '2025-12-15 00:00:00', 'Europe/Stockholm', 'UTC'
-      ))
-  AND start_ts <  UNIX_TIMESTAMP(CONVERT_TZ(
-        '2025-12-17 00:00:00', 'Europe/Stockholm', 'UTC'
-      ));
+DELETE FROM homeassistant.statistics_short_term
+WHERE id = 96114730;
 ```
-
-Update the time accordingly.
 
 ### Add domain sensors
 
