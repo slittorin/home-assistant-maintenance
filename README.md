@@ -139,8 +139,8 @@ FROM homeassistant.states
 WHERE metadata_id = 270
   AND last_updated_ts BETWEEN UNIX_TIMESTAMP('2026-03-02 00:00:00') AND UNIX_TIMESTAMP('2026-03-03 23:59:59');
 ```
-Take note of the value for `state_id` (B), in this case it is `607603044`. This is the id to be deleted.\
-Take note of the value for `old_state_id` (C), in this case it is `607541794`. This is the id we need to not break the index.
+Isolate the value for `state_id` (B), in this case it is `607603044`. This is the id to be deleted.\
+Isolate the value for `old_state_id` (C), in this case it is `607541794`. This is the id we need to not break the index.
 
 3. Verify the data before deletion:
 Set the value for `state_id` to the (B) value.
@@ -176,10 +176,10 @@ DELETE FROM homeassistant.states
 WHERE state_id = 607603044;
 ```
 
-#### Remove data from Home Assistant historical tables
+#### Remove data from Home Assistant statistics table
 
 1. Isolate the right metadata_id
-Utilize the followin SQL to isolate the right metadata_id:
+Utilize the followin SQL to isolate the right id:
 ```sql
 SELECT *
 FROM homeassistant.statistics_meta
@@ -195,7 +195,7 @@ FROM homeassistant.statistics
 WHERE metadata_id = 163
   AND created_ts BETWEEN UNIX_TIMESTAMP('2026-03-02 00:00:00') AND UNIX_TIMESTAMP('2026-03-03 23:59:59');
 ```
-Take note of the value for `id` (F), in this case it is `8073434`. This is the id to be deleted.
+Isolate the value for `id` (F), in this case it is `8073434`. This is the id to be deleted.
 
 3. Verify the data before deletion:
 Set the value for `id` to the (F) value.
@@ -206,14 +206,32 @@ WHERE id = 8073434;
 ```
 If the row presented is the correct one to delete, proceed with the below.
 
-6. We thereafter can delete the state:
+4. We thereafter can delete the statistics-id:
 Set the value for `id` to the (F) value.
 ```sql
 DELETE FROM homeassistant.statistics
 WHERE id = 8073434;
 ```
 
+#### Remove data from Home Assistant statistics_short_term table
 
+1. Isolate the right metadata_id
+Utilize the followin SQL to isolate the right metadata_id:
+```sql
+SELECT *
+FROM homeassistant.statistics_short_term
+WHERE statistic_id = 'sensor.balboa_spa_circulation_pump_heater_consumption_hour';
+```
+Take note of the value for `id` (E), in this case it is `163`.
+
+2. Isolate the right data for the specific time period:
+Set the value for `metadata_id` to the (E) value.
+```sql
+SELECT *
+FROM homeassistant.statistics_short_term
+WHERE metadata_id = 163
+  AND created_ts BETWEEN UNIX_TIMESTAMP('2026-03-02 00:00:00') AND UNIX_TIMESTAMP('2026-03-03 23:59:59');
+```
 
 
 
