@@ -139,7 +139,7 @@ FROM homeassistant.states
 WHERE metadata_id = 270
   AND last_updated_ts BETWEEN UNIX_TIMESTAMP('2026-03-02 00:00:00') AND UNIX_TIMESTAMP('2026-03-03 23:59:59');
 ```
-Take note of the value for `state_id` (A), in this case it is `607603044`. This is the id to be deleted.
+Take note of the value for `state_id` (A), in this case it is `607603044`. This is the id to be deleted.\
 Take note of the value for `old_state_id` (B), in this case it is `607541794`. This is the id we need to not break the index.
 
 2. Verify the data before deletion:
@@ -161,7 +161,7 @@ WHERE old_state_id = 607603044;
 Take note of the value for `state_id` (C), in this case it is `607632453`. This is the id we need to update for `old_state_id`.
 
 4. We need to update so that the index do not break:
-Set the value for `old_state_id` to the (B) value.
+Set the value for `old_state_id` to the (B) value.\
 Set the value for `state_id` to the (C) value.
 ```sql
 UPDATE homeassistant.states
