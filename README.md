@@ -241,7 +241,7 @@ WHERE id = 96114730;
 If the row presented is the correct one to delete, proceed with the below.
 
 4. We thereafter can delete the statistics_short_term-id:
-Set the value for `id` to the (F) value.
+Set the value for `id` to the (G) value.
 ```sql
 DELETE FROM homeassistant.statistics_short_term
 WHERE id = 96114730;
