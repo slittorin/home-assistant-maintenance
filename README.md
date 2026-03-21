@@ -297,13 +297,11 @@ Create the stored procedure with the below:
 --     CALL homeassistant.adjust_statistics_sum(6, 1774058000.0, 1774059000.0, -3.5, 'update');
 -- =============================================================================
 
-USE homeassistant;
-
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS adjust_statistics_sum$$
+DROP PROCEDURE IF EXISTS homeassistant.adjust_statistics_sum$$
 
-CREATE PROCEDURE adjust_statistics_sum(
+CREATE PROCEDURE homeassistant.adjust_statistics_sum(
     IN p_metadata_id   INT,
     IN p_from_ts       DOUBLE,
     IN p_to_ts         DOUBLE,
@@ -324,7 +322,7 @@ BEGIN
     -- Cursor: selects the rows that match the criteria
     DECLARE cur CURSOR FOR
         SELECT id, created_ts, `sum`
-        FROM   statistics
+        FROM   homeassistant.statistics
         WHERE  metadata_id = p_metadata_id
           AND  created_ts >= p_from_ts
           AND  created_ts <= p_to_ts
@@ -399,7 +397,7 @@ BEGIN
 
         -- Perform the actual UPDATE only in 'update' mode
         IF LOWER(p_mode) = 'update' THEN
-            UPDATE statistics
+            UPDATE homeassistant.statistics
             SET    `sum` = v_new_sum
             WHERE  id = v_id;
 
