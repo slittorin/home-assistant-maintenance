@@ -268,13 +268,13 @@ Always ensure that you have verified the values to add into the stored procedure
 
 First run the stored procedure with (example):
 ```sql
-CALL homeassistant.adjust_statistics_sum(163, 1772463611.7957425, 1774087211.5659456, -706,50162, 'info');
+CALL homeassistant.adjust_statistics_sum(163, 1772463611.7957425, 1774087211.5659456, -706.50162, 'info');
 ```
 Look at the output and enumerate so that the correct data are shown for: `id, created_ts, old_sum, new_sum`.
 
 If the values are correct, you can run the stored procedure with (example):
 ```sql
-CALL homeassistant.adjust_statistics_sum(163, 1772463611.7957425, 1774087211.5659456, -706,50162, 'update');
+CALL homeassistant.adjust_statistics_sum(163, 1772463611.7957425, 1774087211.5659456, -706.50162, 'update');
 ```
 Look at the output and enumerate so that the correct data are shown for: `id, created_ts, old_sum, new_sum`.
 
