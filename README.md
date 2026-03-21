@@ -250,7 +250,8 @@ WHERE id = 96114730;
 ```
 #### Update sum-column in Home Assistant statistics table
 
-When removing data in the statistics table, the summarized data in column `sum` does not update.
+When removing data in the statistics table, the summarized data in column `sum` does not update.\
+And this value is used for Home Assistant and by graphs, energy dashboards, utility meters, etc.
 
 Therefore we need to iterate through the table and update the value in column `sum`.
 
