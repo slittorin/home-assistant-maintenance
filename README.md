@@ -129,10 +129,10 @@ SELECT *
 FROM homeassistant.states_meta
 WHERE entity_id = 'sensor.balboa_spa_circulation_pump_heater_consumption_hour';
 ```
-Take note of the value for `metadata_id` (A), in this case it is `270`.
+Take note of the value for `metadata_id` `(A)`, in this case it is `270`.
 
 2. Isolate the right data for the specific time period:
-Set the value for `metadata_id` to the (A) value.
+Set the value for `metadata_id` to the `(A)` value.
 Update the limit to appropriate value if data is not found.
 ```sql
 SELECT *
@@ -141,11 +141,11 @@ WHERE metadata_id = 270
   AND last_updated_ts BETWEEN UNIX_TIMESTAMP('2026-03-02 00:00:00') AND UNIX_TIMESTAMP('2026-03-03 23:59:59')
 LIMIT 1000;
 ```
-Isolate the value for `state_id` (B), in this case it is `607603044`. This is the id to be deleted.\
-Isolate the value for `old_state_id` (C), in this case it is `607541794`. This is the id we need to not break the index.
+Isolate the value for `state_id` `(B)`, in this case it is `607603044`. This is the id to be deleted.\
+Isolate the value for `old_state_id` `(C)`, in this case it is `607541794`. This is the id we need to not break the index.
 
 3. Verify the data before deletion:
-Set the value for `state_id` to the (B) value.
+Set the value for `state_id` to the `(B)` value.
 ```sql
 SELECT *
 FROM homeassistant.states
@@ -154,17 +154,17 @@ WHERE state_id = 607603044;
 If the row presented is the correct one to delete, proceed with the below.
 
 4. We need to get the row that references the id to be deleted:
-Set the value for `old_state_id` to the (B) value.
+Set the value for `old_state_id` to the `(B)` value.
 ```sql
 SELECT *
 FROM homeassistant.states
 WHERE old_state_id = 607603044;
 ```
-Take note of the value for `state_id` (D), in this case it is `607632453`. This is the id we need to update for `old_state_id`.
+Take note of the value for `state_id` `(D)`, in this case it is `607632453`. This is the id we need to update for `old_state_id`.
 
 5. We need to update so that the index do not break:
-Set the value for `old_state_id` to the (C) value.\
-Set the value for `state_id` to the (D) value.
+Set the value for `old_state_id` to the `(C)` value.\
+Set the value for `state_id` to the `(D)` value.
 ```sql
 UPDATE homeassistant.states
 SET old_state_id = 607541794
@@ -172,7 +172,7 @@ WHERE state_id = 607632453;
 ```
 
 6. We thereafter can delete the state:
-Set the value for `state_id` to the (B) value.
+Set the value for `state_id` to the `(B)` value.
 ```sql
 DELETE FROM homeassistant.states
 WHERE state_id = 607603044;
@@ -187,10 +187,10 @@ SELECT *
 FROM homeassistant.statistics_meta
 WHERE statistic_id = 'sensor.balboa_spa_circulation_pump_heater_consumption_hour';
 ```
-Take note of the value for `id` (E), in this case it is `163`.
+Take note of the value for `id` `(E)`, in this case it is `163`.
 
 2. Isolate the right data for the specific time period:
-Set the value for `metadata_id` to the (E) value.
+Set the value for `metadata_id` to the `(E)` value.
 Update the limit to appropriate value if data is not found.
 ```sql
 SELECT *
@@ -199,10 +199,10 @@ WHERE metadata_id = 163
   AND created_ts BETWEEN UNIX_TIMESTAMP('2026-03-02 00:00:00') AND UNIX_TIMESTAMP('2026-03-03 23:59:59')
 LIMIT 1000;
 ```
-Isolate the value for `id` (F), in this case it is `8073434`. This is the id to be deleted.
+Isolate the value for `id` `(F)`, in this case it is `8073434`. This is the id to be deleted.
 
 3. Verify the data before deletion:
-Set the value for `id` to the (F) value.
+Set the value for `id` to the `(F)` value.
 ```sql
 SELECT *
 FROM homeassistant.statistics
@@ -211,7 +211,7 @@ WHERE id = 8073434;
 If the row presented is the correct one to delete, proceed with the below.
 
 4. We thereafter can delete the statistics-id:
-Set the value for `id` to the (F) value.
+Set the value for `id` to the `(F)` value.
 ```sql
 DELETE FROM homeassistant.statistics
 WHERE id = 8073434;
@@ -247,6 +247,202 @@ Set the value for `id` to the (G) value.
 ```sql
 DELETE FROM homeassistant.statistics_short_term
 WHERE id = 96114730;
+```
+#### Update sum-column in Home Assistant statistics table
+
+When removing data in the statistics table, the summarized data in column `sum` does not update.
+
+Therefore we need to iterate through the table and update the value in column `sum`.
+
+To do this, you need to:
+- Retrieve the value (E) from above.
+- Identify the first row with the wrong data and retrieve the value for column `created_ts`.
+- Identify the last row with the wrong data and retrieve the value for column `created_ts`.
+- Identify the value you want to correct the values in column `sum` with.
+  - If you want to add 501.2, you use the value: 501.2
+  - If you want to remove 103.33, you use the value: -103.33
+
+Always ensure that you have backed up the database before running the stored procedure.\
+Always ensure that you have verified the values to add into the stored procedure.
+
+First run the stored procedure with (example):
+```sql
+CALL homeassistant.adjust_statistics_sum(163, 1772463611.7957425, 1774087211.5659456, -706,50162, 'info');
+```
+Look at the output and enumerate so that the correct data are shown for: `id, created_ts, old_sum, new_sum`.
+
+If the values are correct, you can run the stored procedure with (example):
+```sql
+CALL homeassistant.adjust_statistics_sum(163, 1772463611.7957425, 1774087211.5659456, -706,50162, 'update');
+```
+Look at the output and enumerate so that the correct data are shown for: `id, created_ts, old_sum, new_sum`.
+
+Create the stored procedure with the below:
+```sql
+-- =============================================================================
+-- Stored Procedure: adjust_statistics_sum
+-- Database:         homeassistant
+-- Table:            statistics
+--
+-- Purpose:          Adjusts the 'sum' column for rows matching a given
+--                   metadata_id within a created_ts range (inclusive).
+--                   Supports dry-run (info) and live update modes.
+--
+-- Usage examples:
+--   Dry-run (preview only):
+--     CALL homeassistant.adjust_statistics_sum(6, 1774058000.0, 1774059000.0, -3.5, 'info');
+--
+--   Live update:
+--     CALL homeassistant.adjust_statistics_sum(6, 1774058000.0, 1774059000.0, -3.5, 'update');
+-- =============================================================================
+
+USE homeassistant;
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS adjust_statistics_sum$$
+
+CREATE PROCEDURE adjust_statistics_sum(
+    IN p_metadata_id   INT,
+    IN p_from_ts       DOUBLE,
+    IN p_to_ts         DOUBLE,
+    IN p_adjustment    DOUBLE,
+    IN p_mode          VARCHAR(10)   -- 'update' or 'info'
+)
+BEGIN
+    -- -----------------------------------------------------------------
+    -- Variable declarations (must come before any executable statements)
+    -- -----------------------------------------------------------------
+    DECLARE v_id           INT;
+    DECLARE v_created_ts   DOUBLE;
+    DECLARE v_old_sum      DOUBLE;
+    DECLARE v_new_sum      DOUBLE;
+    DECLARE v_row_count    INT DEFAULT 0;
+    DECLARE v_done         INT DEFAULT 0;
+
+    -- Cursor: selects the rows that match the criteria
+    DECLARE cur CURSOR FOR
+        SELECT id, created_ts, `sum`
+        FROM   statistics
+        WHERE  metadata_id = p_metadata_id
+          AND  created_ts >= p_from_ts
+          AND  created_ts <= p_to_ts
+        ORDER  BY created_ts;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET v_done = 1;
+
+    -- -----------------------------------------------------------------
+    -- Input validation
+    -- -----------------------------------------------------------------
+    IF LOWER(p_mode) NOT IN ('update', 'info') THEN
+        SELECT '*** ERROR: p_mode must be ''update'' or ''info''.' AS message;
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Invalid mode. Use ''update'' or ''info''.';
+    END IF;
+
+    IF p_from_ts > p_to_ts THEN
+        SELECT '*** ERROR: p_from_ts is greater than p_to_ts.' AS message;
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'from-timestamp must be <= to-timestamp.';
+    END IF;
+
+    -- -----------------------------------------------------------------
+    -- Header / summary info
+    -- -----------------------------------------------------------------
+    SELECT '============================================================' AS info
+    UNION ALL
+    SELECT CONCAT('  Procedure     : adjust_statistics_sum')
+    UNION ALL
+    SELECT CONCAT('  Mode          : ', UPPER(p_mode),
+                  CASE WHEN LOWER(p_mode) = 'info'
+                       THEN '  (dry-run, no changes will be made)'
+                       ELSE '  (LIVE — rows will be updated)'
+                  END)
+    UNION ALL
+    SELECT CONCAT('  metadata_id   : ', p_metadata_id)
+    UNION ALL
+    SELECT CONCAT('  from_ts       : ', p_from_ts)
+    UNION ALL
+    SELECT CONCAT('  to_ts         : ', p_to_ts)
+    UNION ALL
+    SELECT CONCAT('  adjustment    : ', p_adjustment)
+    UNION ALL
+    SELECT '============================================================';
+
+    -- -----------------------------------------------------------------
+    -- Create a temporary table for collecting per-row results
+    -- -----------------------------------------------------------------
+    DROP TEMPORARY TABLE IF EXISTS _tmp_adjust_results;
+    CREATE TEMPORARY TABLE _tmp_adjust_results (
+        row_num    INT AUTO_INCREMENT PRIMARY KEY,
+        id         INT,
+        created_ts DOUBLE,
+        old_sum    DOUBLE,
+        new_sum    DOUBLE,
+        status     VARCHAR(20)
+    );
+
+    -- -----------------------------------------------------------------
+    -- Iterate over matching rows
+    -- -----------------------------------------------------------------
+    OPEN cur;
+
+    read_loop: LOOP
+        FETCH cur INTO v_id, v_created_ts, v_old_sum;
+        IF v_done THEN
+            LEAVE read_loop;
+        END IF;
+
+        SET v_new_sum  = v_old_sum + p_adjustment;
+        SET v_row_count = v_row_count + 1;
+
+        -- Perform the actual UPDATE only in 'update' mode
+        IF LOWER(p_mode) = 'update' THEN
+            UPDATE statistics
+            SET    `sum` = v_new_sum
+            WHERE  id = v_id;
+
+            INSERT INTO _tmp_adjust_results (id, created_ts, old_sum, new_sum, status)
+            VALUES (v_id, v_created_ts, v_old_sum, v_new_sum, 'UPDATED');
+        ELSE
+            INSERT INTO _tmp_adjust_results (id, created_ts, old_sum, new_sum, status)
+            VALUES (v_id, v_created_ts, v_old_sum, v_new_sum, 'DRY-RUN');
+        END IF;
+
+    END LOOP;
+
+    CLOSE cur;
+
+    -- -----------------------------------------------------------------
+    -- Output the per-row results
+    -- -----------------------------------------------------------------
+    SELECT id,
+           created_ts,
+           old_sum,
+           new_sum,
+           (new_sum - old_sum) AS applied_adjustment,
+           status
+    FROM   _tmp_adjust_results
+    ORDER  BY row_num;
+
+    -- -----------------------------------------------------------------
+    -- Footer / totals
+    -- -----------------------------------------------------------------
+    SELECT CONCAT('Total rows matched: ', v_row_count) AS summary
+    UNION ALL
+    SELECT CONCAT('Adjustment value : ', p_adjustment)
+    UNION ALL
+    SELECT CONCAT('Action taken     : ',
+                  CASE WHEN LOWER(p_mode) = 'update'
+                       THEN CONCAT(v_row_count, ' row(s) UPDATED')
+                       ELSE 'None (dry-run)'
+                  END);
+
+    DROP TEMPORARY TABLE IF EXISTS _tmp_adjust_results;
+
+END$$
+
+DELIMITER ;
 ```
 
 ### Add domain sensors
