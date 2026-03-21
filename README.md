@@ -222,7 +222,7 @@ WHERE id = 8073434;
 Note that sum-values in the table is not updated with below method.
 
 1. Isolate the right data for the specific time period:
-Set the value for `metadata_id` to the (E) value.
+Set the value for `metadata_id` to the `(E)` value.
 Update the limit to appropriate value if data is not found.
 ```sql
 SELECT *
@@ -231,10 +231,10 @@ WHERE metadata_id = 163
   AND created_ts BETWEEN UNIX_TIMESTAMP('2026-03-02 00:00:00') AND UNIX_TIMESTAMP('2026-03-03 23:59:59')
 LIMIT 1000;
 ```
-Isolate the value(s) for `id` (G), in this case it is `96114730`. This is the id to be deleted.
+Isolate the value(s) for `id` `(G)`, in this case it is `96114730`. This is the id to be deleted.
 
 3. Verify the data before deletion:
-Set the value for `id` to the (G) value.
+Set the value for `id` to the `(G)` value.
 ```sql
 SELECT *
 FROM homeassistant.statistics_short_term
@@ -243,7 +243,7 @@ WHERE id = 96114730;
 If the row presented is the correct one to delete, proceed with the below.
 
 4. We thereafter can delete the statistics_short_term-id:
-Set the value for `id` to the (G) value.
+Set the value for `id` to the `(G)` value.
 ```sql
 DELETE FROM homeassistant.statistics_short_term
 WHERE id = 96114730;
@@ -256,7 +256,7 @@ And this value is used for Home Assistant and by graphs, energy dashboards, util
 Therefore we need to iterate through the table and update the value in column `sum`.
 
 To do this, you need to:
-- Retrieve the value (E) from above.
+- Retrieve the value `(E)` from above.
 - Identify the first row with the wrong data and retrieve the value for column `created_ts`.
 - Identify the last row with the wrong data and retrieve the value for column `created_ts`.
 - Identify the value you want to correct the values in column `sum` with.
