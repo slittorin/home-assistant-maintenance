@@ -255,7 +255,7 @@ And this value is used for Home Assistant and by graphs, energy dashboards, util
 
 Therefore we need to iterate through the table and update the value in column `sum`.
 
-To do this, you need to:
+1. To do this, you need to:
 - Retrieve the value `(E)` from above.
 - Identify the first row with the wrong data and retrieve the value for column `created_ts`.
 - Identify the last row with the wrong data and retrieve the value for column `created_ts`.
@@ -267,36 +267,51 @@ Always ensure that you have backed up the MariaDB-database before running the st
 Always ensure that you have verified the values to add into the stored procedure.\
 Always ensure that you run the script when the sensor is not updated (in this case it runs once each hour).
 
-1. Run the stored procedure with (example):
+2. Run the stored procedure with (example):
 ```sql
 CALL homeassistant.adjust_statistics_sum(163, 1772463611.7957425, 1774087211.5659456, -706.50162, 'info');
 ```
 Look at the output and enumerate so that the correct data are shown for: `id, created_ts, old_sum, new_sum`.
 
-2. If the values are correct, you can run the stored procedure with (example):
+3. If the values are correct, you can run the stored procedure with (example):
 ```sql
 CALL homeassistant.adjust_statistics_sum(163, 1772463611.7957425, 1774087211.5659456, -706.50162, 'update');
 ```
 Look at the output and enumerate so that the correct data are shown for: `id, created_ts, old_sum, new_sum`.
 
-3. Since Home Assistant runs a periodic compilation job — roughly every hour — that reads `statistics_short_term` and aggregates it into `statistics`.
+4. Since Home Assistant runs a periodic compilation job — roughly every hour — that reads `statistics_short_term` and aggregates it into `statistics`.
 
 We have two options, either update the data in table `statistics_short_term` or delete the data in the table.
 
+Delete in `statistics_short_term`:\
 Since the data in `statistics_short_term` is required for any data in my setup, I will delete the data.\
-Note that this needs to be done shortly after step 2, and there is still a risk that Home Assistant will update table `statistics`.
-
+Note that this needs to be done shortly after step 2, and there is still a risk that Home Assistant will update table `statistics`.\
+20260322: It turned out that this was the wrong approach, as Home Assistant then treats the sensor as new, and start fresh in table statistics also.\
 Set the value for `metadata_id` to the `(E)` value.
 ```sql
 DELETE FROM homeassistant.statistics_short_term
 WHERE metadata_id = 163;
 ```
 
+Update in `statistics_short_term`:\
+This is the right approach.
+Perform the same for step 1, but for data in `statistics_short_term`.
+Set the value for `metadata_id` to the `(E)` value.
+```sql
+CALL homeassistant.adjust_statistics_short_term_sum(163, 1772463611.7957425, 1774087211.5659456, -706.50162, 'info');
+```
+Look at the output and enumerate so that the correct data are shown for: `id, created_ts, old_sum, new_sum`.
+
+```sql
+CALL homeassistant.adjust_statistics_short_term_sum(163, 1772463611.7957425, 1774087211.5659456, -706.50162, 'update');
+```
+Look at the output and enumerate so that the correct data are shown for: `id, created_ts, old_sum, new_sum`.
+
 5. Restart also Home Assistant, to ensure that all cached data is flushed.
 
 6. Verify that the sensor is now correct, including running sql above to verify in tables.
 
-Create the stored procedure with the below:
+Create the stored procedures with the below:
 ```sql
 -- =============================================================================
 -- Stored Procedure: adjust_statistics_sum
@@ -416,6 +431,171 @@ BEGIN
         -- Perform the actual UPDATE only in 'update' mode
         IF LOWER(p_mode) = 'update' THEN
             UPDATE homeassistant.statistics
+            SET    `sum` = v_new_sum
+            WHERE  id = v_id;
+
+            INSERT INTO _tmp_adjust_results (id, created_ts, old_sum, new_sum, status)
+            VALUES (v_id, v_created_ts, v_old_sum, v_new_sum, 'UPDATED');
+        ELSE
+            INSERT INTO _tmp_adjust_results (id, created_ts, old_sum, new_sum, status)
+            VALUES (v_id, v_created_ts, v_old_sum, v_new_sum, 'DRY-RUN');
+        END IF;
+
+    END LOOP;
+
+    CLOSE cur;
+
+    -- -----------------------------------------------------------------
+    -- Output the per-row results
+    -- -----------------------------------------------------------------
+    SELECT id,
+           created_ts,
+           old_sum,
+           new_sum,
+           (new_sum - old_sum) AS applied_adjustment,
+           status
+    FROM   _tmp_adjust_results
+    ORDER  BY row_num;
+
+    -- -----------------------------------------------------------------
+    -- Footer / totals
+    -- -----------------------------------------------------------------
+    SELECT CONCAT('Total rows matched: ', v_row_count) AS summary
+    UNION ALL
+    SELECT CONCAT('Adjustment value : ', p_adjustment)
+    UNION ALL
+    SELECT CONCAT('Action taken     : ',
+                  CASE WHEN LOWER(p_mode) = 'update'
+                       THEN CONCAT(v_row_count, ' row(s) UPDATED')
+                       ELSE 'None (dry-run)'
+                  END);
+
+    DROP TEMPORARY TABLE IF EXISTS _tmp_adjust_results;
+
+END$$
+
+DELIMITER ;
+```
+
+```sql
+-- =============================================================================
+-- Stored Procedure: adjust_statistics_short_term_sum
+-- Database:         homeassistant
+-- Table:            statistics_short_term
+--
+-- Purpose:          Adjusts the 'sum' column for rows matching a given
+--                   metadata_id within a created_ts range (inclusive).
+--                   Supports dry-run (info) and live update modes.
+--
+-- Usage examples:
+--   Dry-run (preview only):
+--     CALL homeassistant.adjust_statistics_short_term_sum(6, 1774058000.0, 1774059000.0, -3.5, 'info');
+--
+--   Live update:
+--     CALL homeassistant.adjust_statistics_short_term_sum(6, 1774058000.0, 1774059000.0, -3.5, 'update');
+-- =============================================================================
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS homeassistant.adjust_statistics_short_term_sum$$
+
+CREATE PROCEDURE homeassistant.adjust_statistics_short_term_sum(
+    IN p_metadata_id   INT,
+    IN p_from_ts       DOUBLE,
+    IN p_to_ts         DOUBLE,
+    IN p_adjustment    DOUBLE,
+    IN p_mode          VARCHAR(10)   -- 'update' or 'info'
+)
+BEGIN
+    -- -----------------------------------------------------------------
+    -- Variable declarations (must come before any executable statements)
+    -- -----------------------------------------------------------------
+    DECLARE v_id           INT;
+    DECLARE v_created_ts   DOUBLE;
+    DECLARE v_old_sum      DOUBLE;
+    DECLARE v_new_sum      DOUBLE;
+    DECLARE v_row_count    INT DEFAULT 0;
+    DECLARE v_done         INT DEFAULT 0;
+
+    -- Cursor: selects the rows that match the criteria
+    DECLARE cur CURSOR FOR
+        SELECT id, created_ts, `sum`
+        FROM   homeassistant.statistics_short_term
+        WHERE  metadata_id = p_metadata_id
+          AND  created_ts >= p_from_ts
+          AND  created_ts <= p_to_ts
+        ORDER  BY created_ts;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET v_done = 1;
+
+    -- -----------------------------------------------------------------
+    -- Input validation
+    -- -----------------------------------------------------------------
+    IF LOWER(p_mode) NOT IN ('update', 'info') THEN
+        SELECT '*** ERROR: p_mode must be ''update'' or ''info''.' AS message;
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Invalid mode. Use ''update'' or ''info''.';
+    END IF;
+
+    IF p_from_ts > p_to_ts THEN
+        SELECT '*** ERROR: p_from_ts is greater than p_to_ts.' AS message;
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'from-timestamp must be <= to-timestamp.';
+    END IF;
+
+    -- -----------------------------------------------------------------
+    -- Header / summary info
+    -- -----------------------------------------------------------------
+    SELECT '============================================================' AS info
+    UNION ALL
+    SELECT CONCAT('  Procedure     : adjust_statistics_short_term_sum')
+    UNION ALL
+    SELECT CONCAT('  Mode          : ', UPPER(p_mode),
+                  CASE WHEN LOWER(p_mode) = 'info'
+                       THEN '  (dry-run, no changes will be made)'
+                       ELSE '  (LIVE — rows will be updated)'
+                  END)
+    UNION ALL
+    SELECT CONCAT('  metadata_id   : ', p_metadata_id)
+    UNION ALL
+    SELECT CONCAT('  from_ts       : ', p_from_ts)
+    UNION ALL
+    SELECT CONCAT('  to_ts         : ', p_to_ts)
+    UNION ALL
+    SELECT CONCAT('  adjustment    : ', p_adjustment)
+    UNION ALL
+    SELECT '============================================================';
+
+    -- -----------------------------------------------------------------
+    -- Create a temporary table for collecting per-row results
+    -- -----------------------------------------------------------------
+    DROP TEMPORARY TABLE IF EXISTS _tmp_adjust_results;
+    CREATE TEMPORARY TABLE _tmp_adjust_results (
+        row_num    INT AUTO_INCREMENT PRIMARY KEY,
+        id         INT,
+        created_ts DOUBLE,
+        old_sum    DOUBLE,
+        new_sum    DOUBLE,
+        status     VARCHAR(20)
+    );
+
+    -- -----------------------------------------------------------------
+    -- Iterate over matching rows
+    -- -----------------------------------------------------------------
+    OPEN cur;
+
+    read_loop: LOOP
+        FETCH cur INTO v_id, v_created_ts, v_old_sum;
+        IF v_done THEN
+            LEAVE read_loop;
+        END IF;
+
+        SET v_new_sum  = v_old_sum + p_adjustment;
+        SET v_row_count = v_row_count + 1;
+
+        -- Perform the actual UPDATE only in 'update' mode
+        IF LOWER(p_mode) = 'update' THEN
+            UPDATE homeassistant.statistics_short_term
             SET    `sum` = v_new_sum
             WHERE  id = v_id;
 
