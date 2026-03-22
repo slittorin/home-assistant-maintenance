@@ -294,7 +294,7 @@ WHERE metadata_id = 163;
 
 5. Restart also Home Assistant, to ensure that all cached data is flushed.
 
-6. Verify that the sensor is now correct, including 
+6. Verify that the sensor is now correct, including running sql above to verify in tables.
 
 Create the stored procedure with the below:
 ```sql
