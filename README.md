@@ -263,7 +263,7 @@ To do this, you need to:
   - If you want to add 501.2, you use the value: 501.2
   - If you want to remove 103.33, you use the value: -103.33
 
-Always ensure that you have backed up the database before running the stored procedure.\
+Always ensure that you have backed up the MariaDB-database before running the stored procedure.\
 Always ensure that you have verified the values to add into the stored procedure.\
 Always ensure that you run the script when the sensor is not updated (in this case it runs once each hour).
 
@@ -574,6 +574,11 @@ join(
 
 ### Exclude sensors for InfluxDB integration - reduce InfluxDB size
 
+#### Downsample sensor-data
+
+Always ensure that you have backed up the InfluxDB before running scripts.\
+Always ensure that you have verified the values to utilize for the scripts.
+
 My InfluxDB quickly increased in size, up until approx 1030 MB in early 2023.
 
 After analysis of the data received into InfluxDB over a month, I isolated a number of further entities that filled up the database.
@@ -611,6 +616,45 @@ The convert-script can take max, min, average, last, first and sum for each hour
 
 I managed to the InfluxDB down from 1030MB to 130MB by doing this, and also reduced the load/daily-increase in size.
 A benefit is also that the load-time for some of the graphs has reduced 5-10 folds, as there is only hourly-data to collect.
+
+#### Remove specific sensor-data
+
+Always ensure that you have backed up the InfluxDB before running scripts.\
+Always ensure that you have verified the values to utilize for the scripts.
+
+This can be used to remove data over time, or to remove specific sensor data in InfluxDB.
+
+First, export the data from InfluxDB by running the following script on server1 in directory `/srv`:
+```
+sudo ./influxdb-entity-export.sh -e sensor.balboa_spa_circulation_pump_heater_consumption_hour -f 20260321 -t 20260322
+```
+Change the name of the sensor (-e), and the from (-f) and to (-t) dates.
+
+The output looks like the following:
+```
+Finished InfluxDB entity export. No error.
+CSV-file output: /srv/ha-history-db/export/influx-entity-export-sensor_balboa_spa_circulation_pump_heater_consumption_hour-20260321-20260322.csv
+Update file and keep only rows that are to be deleted.
+Run thereafter the following script: influxdb-entity-delete.sh -i /srv/ha-history-db/export/influx-entity-export-sensor_balboa_spa_circulation_pump_heater_consumption_hour-20260321-20260322.csv
+You can thereafter run this script again to export the data. Note however that file can be overwritten!
+```
+Log-data for the script exists in directory `/srv/log`.
+
+Second, update the exported file to ONLY include rows that are to be deleted from InfluxDB.
+
+Thirdly, run the following script in directory `/srv` (note that it can take long time to delete):
+```
+sudo influxdb-entity-delete.sh -i /srv/ha-history-db/export/influx-entity-export-sensor_balboa_spa_circulation_pump_heater_consumption_hour-20260321-20260322.csv
+```
+Log-data for the script exists in directory `/srv/log`.
+
+Forthly, rename the file csv-file to a new name, so we know what was deleted.
+
+Fiftly, export the data from InfluxDB again by running the following script on server1 in directory `/srv`:
+```
+sudo ./influxdb-entity-export.sh -e sensor.balboa_spa_circulation_pump_heater_consumption_hour -f 20260321 -t 20260322
+```
+Look thereafter into the csv-file and isolate if the rows/data where deleted.
 
 ## Errors, problems and challenges:
 
