@@ -9,9 +9,9 @@
   - [Check updates for Grafana](https://github.com/slittorin/home-assistant-maintenance#check-updates-for-grafana)
   - [Remove obsolete entities](https://github.com/slittorin/home-assistant-maintenance#remove-obsolete-or-faulty-entities)
   - [Remove data from Home Assistant database](https://github.com/slittorin/home-assistant-maintenance?tab=readme-ov-file#remove-data-from-home-assistant-database)
-  - [Add domain sensors](https://github.com/slittorin/home-assistant-maintenance#add-domain-sensors)
   - [Exclude sensors for InfluxDB integration](https://github.com/slittorin/home-assistant-maintenance#exclude-sensors-for-influxdb-integration)
   - [Exclude sensors for InfluxDB integration - reduce InfluxDB size](https://github.com/slittorin/home-assistant-maintenance#exclude-sensors-for-influxdb-integration---reduce-influxdb-size)
+  - [Add domain sensors](https://github.com/slittorin/home-assistant-maintenance#add-domain-sensors)
 - Errors, problems and challenges:
   - [Incorrect SMA Energy data](https://github.com/slittorin/home-assistant-maintenance#incorrect-sma-energy-data)
   - [Incorrect Balboa Spa data](https://github.com/slittorin/home-assistant-maintenance#incorrect-balboa-spa-data)
@@ -462,18 +462,6 @@ END$$
 DELIMITER ;
 ```
 
-Since
-
-### Add domain sensors
-
-With they way we are tracking data, we need add sensors when we add integrations/add-ons/devices to our HA system.
-
-1. Keep track if there are new domains that are not tracked.
-   - Go to Dashboard Home Assistant.
-   - Check the listed domains towards those documented in [Domains and Entities configuration](https://github.com/slittorin/home-assistant-configuration#package---home-assistant-system---domains-and-entities).
-2. Where required, add domains and sensors.
-   - Update also [Visualization for Number of domains and entities](https://github.com/slittorin/home-assistant-visualization#number-of-domains-and-entities).
-
 ### Exclude sensors for InfluxDB integration
 
 See also 'Exclude sensors for InfluxDB integration - reduce InfluxDB size' below.
@@ -727,6 +715,16 @@ for the same entity and date range.
 ```
 
 Thirdly, check that the data is deleted, either through the Grafana-view listed above, or through a new export.
+
+### Add domain sensors
+
+With they way we are tracking data, we need add sensors when we add integrations/add-ons/devices to our HA system.
+
+1. Keep track if there are new domains that are not tracked.
+   - Go to Dashboard Home Assistant.
+   - Check the listed domains towards those documented in [Domains and Entities configuration](https://github.com/slittorin/home-assistant-configuration#package---home-assistant-system---domains-and-entities).
+2. Where required, add domains and sensors.
+   - Update also [Visualization for Number of domains and entities](https://github.com/slittorin/home-assistant-visualization#number-of-domains-and-entities).
 
 ## Errors, problems and challenges:
 
