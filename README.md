@@ -279,6 +279,8 @@ CALL homeassistant.adjust_statistics_sum(163, 1772463611.7957425, 1774087211.565
 ```
 Look at the output and enumerate so that the correct data are shown for: `id, created_ts, old_sum, new_sum`.
 
+Restart also Home Assistant, to ensure that all cached data is flushed.
+
 Create the stored procedure with the below:
 ```sql
 -- =============================================================================
@@ -617,7 +619,7 @@ The convert-script can take max, min, average, last, first and sum for each hour
 I managed to the InfluxDB down from 1030MB to 130MB by doing this, and also reduced the load/daily-increase in size.
 A benefit is also that the load-time for some of the graphs has reduced 5-10 folds, as there is only hourly-data to collect.
 
-#### Remove specific sensor-data entries/rows
+#### Remove specific sensor-data entries/rows in InfluxDB
 
 Always ensure that you have backed up the InfluxDB before running scripts.\
 Always ensure that you have verified the values to utilize for the scripts.
@@ -656,7 +658,7 @@ sudo ./influxdb-entity-export.sh -e sensor.balboa_spa_circulation_pump_heater_co
 ```
 Look thereafter into the csv-file and isolate if the rows/data where deleted.
 
-#### Remove sensor-data for a date-range.
+#### Remove sensor-data for a date-range in InfluxDB
 
 Always ensure that you have backed up the InfluxDB before running scripts.\
 Always ensure that you have verified the values to utilize for the scripts.
