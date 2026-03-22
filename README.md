@@ -617,12 +617,12 @@ The convert-script can take max, min, average, last, first and sum for each hour
 I managed to the InfluxDB down from 1030MB to 130MB by doing this, and also reduced the load/daily-increase in size.
 A benefit is also that the load-time for some of the graphs has reduced 5-10 folds, as there is only hourly-data to collect.
 
-#### Remove specific sensor-data
+#### Remove specific sensor-data entries/rows
 
 Always ensure that you have backed up the InfluxDB before running scripts.\
 Always ensure that you have verified the values to utilize for the scripts.
 
-This can be used to remove data over time, or to remove specific sensor data in InfluxDB.
+This can be used to remove specific sensor data in InfluxDB.
 
 First, export the data from InfluxDB by running the following script on server1 in directory `/srv`:
 ```
@@ -655,6 +655,59 @@ Fiftly, export the data from InfluxDB again by running the following script on s
 sudo ./influxdb-entity-export.sh -e sensor.balboa_spa_circulation_pump_heater_consumption_hour -f 20260321 -t 20260322
 ```
 Look thereafter into the csv-file and isolate if the rows/data where deleted.
+
+#### Remove sensor-data for a date-range.
+
+Always ensure that you have backed up the InfluxDB before running scripts.\
+Always ensure that you have verified the values to utilize for the scripts.
+
+This can be used to remove sensordata in InfluxDB for a specific date-range.
+
+First, export the data from InfluxDB by running the following script on server1 in directory `/srv`:
+```
+sudo ./influxdb-entity-export.sh -e binary_sensor.ehs4plem_online -f 20220601 -t 20220701
+```
+Change the name of the sensor (-e), and the from (-f) and to (-t) dates.
+Log-data for the script exists in directory `/srv/log`.
+
+Secondly, run the following script in directory `/srv` (note that it can take long time to delete):
+```
+sudo ./influxdb-entity-delete-daterange.sh -e binary_sensor.ehs4plem_online -f 20220601 -t 20220701
+```
+Log-data for the script exists in directory `/srv/log`.
+
+The output looks like the following:
+```
+=====================================================================
+ DATA TO BE DELETED FROM INFLUXDB
+=====================================================================
+ Entity ID  : binary_sensor.ehs4plem_online
+ Predicate  : entity_id="ehs4plem_online"
+ Start      : 2022-06-01T00:00:00.000000Z
+ Stop       : 2022-07-01T23:59:59.999999Z
+ Bucket     : ha
+ Org        : lite
+=====================================================================
+
+CAUTION: ALL data points for this entity in the given date range will
+         be permanently deleted from InfluxDB.
+         This operation CANNOT be undone.
+
+Tip: Run influxd-entity-export.sh first to preview the data if you
+     have not already done so.
+
+Type YES (uppercase) to confirm deletion, or anything else to abort: YES
+
+Confirmed. Starting deletion...
+
+Finished InfluxDB entity range-delete. No error.
+
+IMPORTANT: influx delete does not confirm how many data points were actually
+removed. Always verify the result by re-running influxd-entity-export.sh
+for the same entity and date range.
+```
+
+Thirdly, check that the data is deleted, either through the Grafana-view listed above, or through a new export.
 
 ## Errors, problems and challenges:
 
