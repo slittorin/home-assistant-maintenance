@@ -264,7 +264,8 @@ To do this, you need to:
   - If you want to remove 103.33, you use the value: -103.33
 
 Always ensure that you have backed up the database before running the stored procedure.\
-Always ensure that you have verified the values to add into the stored procedure.
+Always ensure that you have verified the values to add into the stored procedure.\
+Always ensure that you run the script when the sensor is not updated (in this case it runs once each hour).
 
 First run the stored procedure with (example):
 ```sql
@@ -458,6 +459,8 @@ With they way we are tracking data, we need add sensors when we add integrations
 
 See also 'Exclude sensors for InfluxDB integration - reduce InfluxDB size' below.
 
+#### Isolate possible sensors by looking into Home Assistant database
+
 See first [Governing principles](https://github.com/slittorin/home-assistant-setup#governing-principles) on how Historical data and Database retention is setup.
 
 There are some integrations that will generate a huge amount of states, for instance the SMA Inverter and Home Manager integration will refresh each 5 second and give new state/events.
@@ -488,6 +491,78 @@ How I did the analysis for my setup:
             select * from homeassistant.statistics_meta where statistic_id = 'sensor.metering_current_l1'
             ```
             If it is not, you may want to create the statistics sensors yourself.
+
+#### Isolate possible sensors by looking into InfluxDB database
+
+I created the below Flux-script in Grafana, and added it to a separate view in Home Assistant.
+
+This allows me to get statistics of most sensors in InfluxDB for the last 10 years.\
+And allows me to identify sensors that fill upp space, and are not valid from historical or statistical purpose.\
+That can thereafter be removed from the InfluxDB-database (see further below).
+
+I also created a 30 day view, to allow me to see the latest data as well.
+
+```
+counts =
+  from(bucket: "ha")
+    |> range(start: -10y)
+    |> filter(fn: (r) => exists r["entity_id"])
+    |> filter(fn: (r) => r["_field"] == "state")
+    |> group(columns: ["entity_id", "domain"])    // ← group on both
+    |> count()
+    |> keep(columns: ["entity_id", "domain", "_value"])
+    |> group(columns: [])
+
+total =
+  counts
+    |> sum(column: "_value")
+    |> findRecord(fn: (key) => true, idx: 0)
+
+first_times =
+  from(bucket: "ha")
+    |> range(start: -10y)
+    |> filter(fn: (r) => exists r["entity_id"])
+    |> filter(fn: (r) => r["_field"] == "state")
+    |> group(columns: ["entity_id"])
+    |> first()
+    |> keep(columns: ["entity_id", "_time"])
+    |> rename(columns: {_time: "first_time"})
+    |> group(columns: [])
+
+last_times =
+  from(bucket: "ha")
+    |> range(start: -10y)
+    |> filter(fn: (r) => exists r["entity_id"])
+    |> filter(fn: (r) => r["_field"] == "state")
+    |> group(columns: ["entity_id"])
+    |> last()
+    |> keep(columns: ["entity_id", "_time"])
+    |> rename(columns: {_time: "last_time"})
+    |> group(columns: [])
+
+with_percent =
+  counts
+    |> map(fn: (r) => ({
+        r with
+        row_count: r._value,
+        percent:   100.0 * float(v: r._value) / float(v: total._value)
+      }))
+    |> keep(columns: ["entity_id", "domain", "row_count", "percent"])  // ← keep domain
+
+join(
+  tables: {
+    a: join(
+         tables: {base: with_percent, ft: first_times},
+         on: ["entity_id"]
+       ),
+    lt: last_times
+  },
+  on: ["entity_id"]
+)
+  |> keep(columns: ["entity_id", "domain", "row_count", "percent", "first_time", "last_time"])
+  |> sort(columns: ["row_count"], desc: true)
+  |> limit(n: 100)
+```
 
 ### Exclude sensors for InfluxDB integration - reduce InfluxDB size
 
