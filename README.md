@@ -503,12 +503,12 @@ That can thereafter be removed from the InfluxDB-database (see further below).
 I also created a 30 day view, to allow me to see the latest data as well.
 
 The script shows me the following data for top 100 entities:
-- first_time seen.
-- last_time seen.
+- first_time seen in the InfluxDB database for the stated timeframe.
+- last_time seen in the InfluxDB database for the stated timeframe.
 - domain in Home Assistant.
 - entity_id in Home Assistant.
-- percentage in the InfluxDB database over the given time.
-- row_count in the nfluxDB database over the given time.
+- percentage in the InfluxDB database for the stated timeframe.
+- row_count in the InfluxDB database for the stated timeframe.
 
 ```
 counts =
