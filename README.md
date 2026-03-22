@@ -288,8 +288,8 @@ Note that this needs to be done shortly after step 2, and there is still a risk 
 
 Set the value for `metadata_id` to the `(E)` value.
 ```sql
-DELETE FROM statistics_short_term
-WHERE metadata_id = 163
+DELETE FROM homeassistant.statistics_short_term
+WHERE metadata_id = 163;
 ```
 
 5. Restart also Home Assistant, to ensure that all cached data is flushed.
