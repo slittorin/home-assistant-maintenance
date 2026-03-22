@@ -294,8 +294,8 @@ WHERE metadata_id = 163;
 ```
 
 Update in `statistics_short_term`:\
-This is the right approach.
-Perform the same for step 1, but for data in `statistics_short_term`.
+This is the right approach.\
+Perform the same for step 1, but for data in `statistics_short_term`.\
 Set the value for `metadata_id` to the `(E)` value.
 ```sql
 CALL homeassistant.adjust_statistics_short_term_sum(163, 1772463611.7957425, 1774087211.5659456, -706.50162, 'info');
