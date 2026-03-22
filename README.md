@@ -267,19 +267,34 @@ Always ensure that you have backed up the MariaDB-database before running the st
 Always ensure that you have verified the values to add into the stored procedure.\
 Always ensure that you run the script when the sensor is not updated (in this case it runs once each hour).
 
-First run the stored procedure with (example):
+1. Run the stored procedure with (example):
 ```sql
 CALL homeassistant.adjust_statistics_sum(163, 1772463611.7957425, 1774087211.5659456, -706.50162, 'info');
 ```
 Look at the output and enumerate so that the correct data are shown for: `id, created_ts, old_sum, new_sum`.
 
-If the values are correct, you can run the stored procedure with (example):
+2. If the values are correct, you can run the stored procedure with (example):
 ```sql
 CALL homeassistant.adjust_statistics_sum(163, 1772463611.7957425, 1774087211.5659456, -706.50162, 'update');
 ```
 Look at the output and enumerate so that the correct data are shown for: `id, created_ts, old_sum, new_sum`.
 
-Restart also Home Assistant, to ensure that all cached data is flushed.
+3. Since Home Assistant runs a periodic compilation job — roughly every hour — that reads `statistics_short_term` and aggregates it into `statistics`.
+
+We have two options, either update the data in table `statistics_short_term` or delete the data in the table.
+
+Since the data in `statistics_short_term` is required for any data in my setup, I will delete the data.\
+Note that this needs to be done shortly after step 2, and there is still a risk that Home Assistant will update table `statistics`.
+
+Set the value for `metadata_id` to the `(E)` value.
+```sql
+DELETE FROM statistics_short_term
+WHERE metadata_id = 163
+```
+
+5. Restart also Home Assistant, to ensure that all cached data is flushed.
+
+6. Verify that the sensor is now correct, including 
 
 Create the stored procedure with the below:
 ```sql
@@ -446,6 +461,8 @@ END$$
 
 DELIMITER ;
 ```
+
+Since
 
 ### Add domain sensors
 
