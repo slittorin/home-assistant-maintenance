@@ -907,8 +907,20 @@ With they way we are tracking data, we need add sensors when we add integrations
 2. Where required, add domains and sensors.
    - Update also [Visualization for Number of domains and entities](https://github.com/slittorin/home-assistant-visualization#number-of-domains-and-entities).
 
-### Add domain sensors
+### Find sensors without state_class set
 
+Run the following Jinja2 as template, this will show all sensors that do not have a defined 'state_class'.\
+This to correct any sensors that do not get statistics-saved.
+
+```
+{% set ns = namespace(missing=[]) %}
+{% for state in states.sensor %}
+  {% if state.attributes.state_class is not defined or state.attributes.state_class == '' %}
+    {% set ns.missing = ns.missing + [state.entity_id] %}
+  {% endif %}
+{% endfor %}
+{{ ns.missing | join('\n') }}
+```
 
 ## Errors, problems and challenges:
 
