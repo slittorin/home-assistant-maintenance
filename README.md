@@ -12,6 +12,7 @@
   - [Exclude sensors for InfluxDB integration](https://github.com/slittorin/home-assistant-maintenance#exclude-sensors-for-influxdb-integration)
   - [Exclude sensors for InfluxDB integration - reduce InfluxDB size](https://github.com/slittorin/home-assistant-maintenance#exclude-sensors-for-influxdb-integration---reduce-influxdb-size)
   - [Add domain sensors](https://github.com/slittorin/home-assistant-maintenance#add-domain-sensors)
+  - [Find sensors without state_class set](https://github.com/slittorin/home-assistant-maintenance#add-domain-sensors)
 - Errors, problems and challenges:
   - [Incorrect SMA Energy data](https://github.com/slittorin/home-assistant-maintenance#incorrect-sma-energy-data)
   - [Incorrect Balboa Spa data](https://github.com/slittorin/home-assistant-maintenance#incorrect-balboa-spa-data)
@@ -905,6 +906,9 @@ With they way we are tracking data, we need add sensors when we add integrations
    - Check the listed domains towards those documented in [Domains and Entities configuration](https://github.com/slittorin/home-assistant-configuration#package---home-assistant-system---domains-and-entities).
 2. Where required, add domains and sensors.
    - Update also [Visualization for Number of domains and entities](https://github.com/slittorin/home-assistant-visualization#number-of-domains-and-entities).
+
+### Add domain sensors
+
 
 ## Errors, problems and challenges:
 
